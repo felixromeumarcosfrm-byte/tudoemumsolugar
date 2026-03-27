@@ -3,287 +3,450 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TUDO EM UM SÓ LUGAR | Boutique & Tech</title>
-    
-    <meta name="description" content="A maior loja multimarcas de Angola. iPhones, Samsung, Moda Masculina e Acessórios. Direção de Félix Romeu Marcos.">
+    <title>TUDO EM UM SÓ LUGAR | Ecossistema Digital Félix</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <style>
-        /* VARIÁVEIS DE DESIGN */
         :root {
-            --primary: #121212;
-            --accent: #d4af37; /* Dourado */
-            --success: #28a745;
-            --bg: #f4f4f4;
-            --white: #ffffff;
-            --text: #333;
-            --shadow: 0 10px 30px rgba(0,0,0,0.1);
+            --primary: #050505;
+            --secondary: #121212;
+            --accent: #d4af37; /* Gold */
+            --accent-hover: #b8962d;
+            --text-main: #ffffff;
+            --text-dim: #a0a0a0;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.1);
         }
 
-        /* RESET */
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
-        body { background: var(--bg); color: var(--text); overflow-x: hidden; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
 
-        /* TELA DE BLOQUEIO / CADASTRO */
-        #tela-bloqueio {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--primary); color: var(--white);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            z-index: 10000; transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+        body {
+            background-color: var(--primary);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.6;
         }
-        .box-cadastro { background: var(--white); padding: 40px; border-radius: 20px; width: 90%; max-width: 400px; color: var(--text); text-align: center; box-shadow: 0 0 50px rgba(212, 175, 55, 0.2); }
-        .box-cadastro h2 { color: var(--accent); margin-bottom: 20px; }
-        .box-cadastro input { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; font-size: 1rem; }
-        .btn-acesso { background: var(--accent); color: var(--primary); border: none; width: 100%; padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 1.1rem; transition: 0.3s; }
-        .btn-acesso:hover { background: #b8962d; transform: scale(1.02); }
 
-        /* HEADER */
-        header { background: var(--primary); color: var(--white); padding: 40px 20px; text-align: center; border-bottom: 5px solid var(--accent); }
-        header h1 { font-size: 2.2rem; letter-spacing: 4px; text-transform: uppercase; }
-        .status-bar { background: #1a1a1a; color: var(--accent); padding: 10px; font-size: 0.85rem; text-align: center; border-bottom: 1px solid #333; }
+        /* --- SCROLLBAR --- */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--primary); }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
 
-        /* NAVEGAÇÃO / FILTROS */
-        .nav-filtros { 
-            display: flex; justify-content: center; gap: 10px; padding: 25px; 
-            flex-wrap: wrap; position: sticky; top: 0; background: var(--bg); z-index: 900;
+        /* --- LOGIN SCREEN --- */
+        #auth-overlay {
+            position: fixed; inset: 0; background: var(--primary); z-index: 10000;
+            display: flex; justify-content: center; align-items: center;
+            transition: transform 0.8s cubic-bezier(0.87, 0, 0.13, 1);
         }
-        .filter-btn { 
-            padding: 12px 22px; border: 2px solid var(--accent); background: var(--white); 
-            border-radius: 30px; cursor: pointer; font-weight: bold; transition: 0.3s;
-            color: var(--primary);
+        .auth-card {
+            background: var(--secondary); padding: 40px; border-radius: 24px;
+            width: 90%; max-width: 400px; border: 1px solid var(--border); text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
-        .filter-btn.active { background: var(--accent); color: var(--white); }
-
-        /* VITRINE */
-        .container { max-width: 1300px; margin: 0 auto; padding: 20px; }
-        .grid-loja { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+        .auth-card h1 { font-weight: 800; margin-bottom: 10px; color: var(--accent); }
         
-        .card { 
-            background: var(--white); border-radius: 15px; overflow: hidden; 
-            box-shadow: var(--shadow); transition: 0.4s; position: relative;
-            display: flex; flex-direction: column;
+        /* --- REUSABLE COMPONENTS --- */
+        input, select, textarea {
+            width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px;
+            border: 1px solid var(--border); background: #1a1a1a; color: white; outline: none;
         }
-        .card:hover { transform: translateY(-10px); }
-        .card img { width: 100%; height: 280px; object-fit: cover; background: #eee; }
-        .card-body { padding: 20px; text-align: center; flex-grow: 1; }
-        .card-body h3 { font-size: 1.1rem; margin-bottom: 10px; min-height: 50px; }
-        .price { color: var(--success); font-size: 1.5rem; font-weight: bold; margin-bottom: 15px; display: block; }
+        .btn {
+            cursor: pointer; border: none; border-radius: 12px; font-weight: 600;
+            padding: 14px 24px; transition: 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-gold { background: var(--accent); color: var(--primary); }
+        .btn-gold:hover { background: var(--accent-hover); transform: translateY(-2px); }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: white; }
+
+        /* --- HEADER & NAVIGATION --- */
+        header { padding: 60px 20px 20px; text-align: center; }
+        .logo { font-size: 2.8rem; font-weight: 800; letter-spacing: -2px; color: var(--accent); margin-bottom: 5px; }
         
-        .btn-cart { 
-            background: var(--primary); color: var(--white); border: none; 
-            width: 100%; padding: 15px; border-radius: 8px; cursor: pointer; 
-            font-weight: bold; text-transform: uppercase; transition: 0.3s;
+        .nav-wrapper {
+            position: sticky; top: 0; background: rgba(5, 5, 5, 0.8);
+            backdrop-filter: blur(20px); z-index: 900; padding: 15px 0; border-bottom: 1px solid var(--border);
         }
-        .btn-cart:hover { background: var(--accent); }
-
-        /* CARRINHO FLUTUANTE */
-        #carrinho-painel {
-            position: fixed; bottom: 30px; right: 30px; width: 350px;
-            background: var(--white); border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            padding: 25px; z-index: 2000; display: none; border: 1px solid var(--accent);
+        .categories {
+            display: flex; overflow-x: auto; gap: 12px; padding: 0 20px;
+            max-width: 1200px; margin: 0 auto; scrollbar-width: none;
         }
-        .cart-header { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
-        .cart-items { max-height: 200px; overflow-y: auto; list-style: none; margin-bottom: 15px; }
-        .cart-items li { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dotted #ccc; font-size: 0.9rem; }
-        .btn-whatsapp { background: #25d366; color: white; width: 100%; padding: 15px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
-
-        /* PAINEL ADMIN */
-        #admin-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); display: none; justify-content: center; align-items: center; z-index: 11000;
+        .categories::-webkit-scrollbar { display: none; }
+        .cat-tag {
+            white-space: nowrap; padding: 8px 18px; border-radius: 30px;
+            background: var(--glass); border: 1px solid var(--border);
+            cursor: pointer; font-size: 0.85rem; transition: 0.3s;
         }
-        .admin-box { background: var(--white); padding: 40px; border-radius: 20px; width: 400px; text-align: center; }
+        .cat-tag.active { background: var(--accent); color: var(--primary); border-color: var(--accent); }
 
-        /* FOOTER */
-        footer { background: var(--primary); color: var(--white); padding: 60px 20px; text-align: center; margin-top: 50px; }
-        .lock-icon { margin-top: 30px; opacity: 0.2; cursor: pointer; font-size: 0.8rem; }
+        /* --- VITRINE --- */
+        .container { max-width: 1400px; margin: 40px auto; padding: 0 20px; }
+        .products-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        .card {
+            background: var(--secondary); border-radius: 20px; overflow: hidden;
+            border: 1px solid var(--border); transition: 0.4s; position: relative;
+        }
+        .card:hover { transform: translateY(-10px); border-color: var(--accent); }
+        .card-img-box { position: relative; width: 100%; height: 300px; overflow: hidden; }
+        .card-img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .card:hover .card-img { scale: 1.1; }
+        .card-content { padding: 20px; }
+        .card-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 10px; }
+        .card-price { font-size: 1.4rem; font-weight: 800; color: var(--accent); }
+        
+        .variations { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+        .variation-select { margin: 0; padding: 8px; font-size: 0.75rem; border-radius: 8px; }
 
-        /* RESPONSIVIDADE */
-        @media (max-width: 600px) {
-            #carrinho-painel { width: 90%; right: 5%; bottom: 10px; }
+        /* --- SIDE PANELS (CARRINHO / HISTORICO) --- */
+        .side-panel {
+            position: fixed; top: 0; right: -100%; width: 400px; height: 100%;
+            background: var(--secondary); z-index: 2000; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 40px; box-shadow: -20px 0 50px rgba(0,0,0,0.8);
+            display: flex; flex-direction: column; border-left: 1px solid var(--border);
+        }
+        .panel-open { right: 0; }
+        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .item-list { flex-grow: 1; overflow-y: auto; }
+        .cart-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 0; border-bottom: 1px solid var(--border);
+        }
+
+        /* --- ADMIN PANEL --- */
+        #admin-panel {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 5000;
+            display: none; padding: 40px; overflow-y: auto;
+        }
+        .admin-modal { background: var(--secondary); max-width: 700px; margin: 0 auto; padding: 40px; border-radius: 24px; border: 1px solid var(--accent); }
+
+        /* --- FLOATING ACTIONS --- */
+        .fab {
+            position: fixed; bottom: 30px; right: 30px; width: 64px; height: 64px;
+            border-radius: 20px; background: var(--accent); color: var(--primary);
+            display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3); z-index: 1000; cursor: pointer;
+        }
+        .cart-count {
+            position: absolute; top: -5px; right: -5px; background: white;
+            color: black; font-size: 0.7rem; font-weight: bold; width: 22px; height: 22px;
+            border-radius: 50%; display: flex; justify-content: center; align-items: center;
+        }
+
+        @media (max-width: 500px) {
+            .side-panel { width: 100%; }
+            .logo { font-size: 2rem; }
         }
     </style>
 </head>
 <body>
 
-    <div id="tela-bloqueio">
-        <div class="box-cadastro">
-            <h2>TUDO EM UM SÓ LUGAR</h2>
-            <p>Seja bem-vindo. Identifique-se para acessar a vitrine premium.</p>
-            <input type="text" id="user-nome" placeholder="Seu Nome Completo">
-            <input type="date" id="user-data">
-            <button class="btn-acesso" onclick="concluirCadastro()">ENTRAR NA LOJA</button>
+    <div id="auth-overlay">
+        <div class="auth-card">
+            <h1>FRM | BOUTIQUE</h1>
+            <p style="color: var(--text-dim); margin-bottom: 30px;">Identifique-se para o atendimento personalizado.</p>
+            <input type="text" id="user-name-input" placeholder="Seu Nome Completo">
+            <button class="btn btn-gold" style="width: 100%;" onclick="login()">ENTRAR NA LOJA</button>
         </div>
     </div>
-
-    <div class="status-bar" id="welcome-msg">Aguardando identificação...</div>
 
     <header>
-        <h1>TUDO EM UM SÓ LUGAR</h1>
-        <p>A Excelência em Cada Detalhe | Félix Romeu Marcos</p>
+        <div class="logo">TUDO EM UM SÓ LUGAR</div>
+        <p id="user-greeting" style="color: var(--accent); font-weight: 600;"></p>
     </header>
 
-    <nav class="nav-filtros">
-        <button class="filter-btn active" onclick="filtrar('todos', this)">Todos</button>
-        <button class="filter-btn" onclick="filtrar('iphone', this)">iPhones</button>
-        <button class="filter-btn" onclick="filtrar('samsung', this)">Samsung</button>
-        <button class="filter-btn" onclick="filtrar('moda', this)">Moda & Fatos</button>
-        <button class="filter-btn" onclick="filtrar('acessorios', this)">Acessórios</button>
-        <button class="filter-btn" onclick="filtrar('perfume', this)">Perfumes</button>
-    </nav>
-
-    <div class="container">
-        <main class="grid-loja" id="vitrine-principal"></main>
-    </div>
-
-    <div id="carrinho-painel">
-        <div class="cart-header">
-            <strong>🛒 Meu Carrinho</strong>
-            <span onclick="toggleCart()" style="cursor:pointer; color:red">Fechar</span>
-        </div>
-        <ul class="cart-items" id="lista-pedido"></ul>
-        <div style="font-size: 1.2rem; font-weight: bold; margin-bottom: 15px;">Total: <span id="total-final">0</span> Kz</div>
-        <button class="btn-whatsapp" onclick="enviarWhatsApp()">Finalizar no WhatsApp</button>
-    </div>
-
-    <div id="admin-modal">
-        <div class="admin-box">
-            <h3>🔐 Painel do Gestor</h3>
-            <p style="margin: 10px 0; font-size: 0.9rem;">Acesso restrito ao Diretor Félix</p>
-            <input type="password" id="pass-admin" placeholder="Senha Mestra">
-            <button class="btn-acesso" onclick="validarAdmin()">ACESSAR</button>
-            <div id="admin-data" style="display:none; margin-top:20px;">
-                <hr>
-                <p>Pedidos Hoje: <b id="count-vendas">0</b></p>
-                <button onclick="fecharAdmin()" style="margin-top:10px; background:none; border:none; color:red; cursor:pointer;">Sair</button>
+    <div class="nav-wrapper">
+        <div class="categories" id="cat-list">
+            <button class="cat-tag active" onclick="filterProducts('todos')">Tudo</button>
             </div>
+    </div>
+
+    <main class="container">
+        <div class="products-grid" id="main-vitrine">
+            </div>
+    </main>
+
+    <div id="cart-panel" class="side-panel">
+        <div class="panel-header">
+            <h2>Seu Pedido</h2>
+            <button onclick="togglePanel('cart-panel')" class="btn-outline" style="padding: 5px 12px;">X</button>
+        </div>
+        <div class="item-list" id="cart-items"></div>
+        <div style="padding-top: 20px; border-top: 1px solid var(--border);">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                <span>Total Estimado:</span>
+                <span id="cart-total" style="font-size: 1.5rem; font-weight: 800; color: var(--accent);">0 Kz</span>
+            </div>
+            <button class="btn btn-gold" style="width: 100%; background: #25d366; color: white;" onclick="checkout()">FINALIZAR NO WHATSAPP</button>
         </div>
     </div>
 
-    <footer>
-        <p><strong>WhatsApp:</strong> 941044772 | <strong>E-mail:</strong> felixromeumarcosfrm@gmail.com</p>
-        <p style="margin-top: 10px; opacity: 0.7;">&copy; 2026 TUDO EM UM SÓ LUGAR. Direitos Reservados.</p>
-        <div class="lock-icon" onclick="abrirAdmin()">🔒 Portal Administrativo</div>
+    <div id="history-panel" class="side-panel">
+        <div class="panel-header">
+            <h2>Meu Histórico</h2>
+            <button onclick="togglePanel('history-panel')" class="btn-outline">X</button>
+        </div>
+        <div class="item-list" id="history-items"></div>
+    </div>
+
+    <div id="admin-panel">
+        <div class="admin-modal">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                <h2>Painel do Diretor Félix</h2>
+                <button onclick="toggleAdmin()" class="btn-outline">Fechar</button>
+            </div>
+            
+            <div id="admin-form">
+                <h3>Adicionar Novo Produto</h3>
+                <input type="text" id="adm-name" placeholder="Nome do Produto">
+                <input type="number" id="adm-price" placeholder="Preço (Kz)">
+                <input type="text" id="adm-img" placeholder="URL da Imagem">
+                <select id="adm-cat">
+                    <option value="Smartphones">Smartphones</option>
+                    <option value="Moda">Moda</option>
+                    <option value="Calçados">Calçados</option>
+                    <option value="Perfumes">Perfumes</option>
+                    <option value="Acessórios">Acessórios</option>
+                    <option value="Desporto">Desporto</option>
+                </select>
+                <button class="btn btn-gold" style="width: 100%;" onclick="addProduct()">SALVAR PRODUTO</button>
+            </div>
+            
+            <hr style="margin: 30px 0; opacity: 0.1;">
+            <h3>Produtos Atuais</h3>
+            <div id="admin-list" style="margin-top: 20px;"></div>
+        </div>
+    </div>
+
+    <div class="fab" onclick="togglePanel('cart-panel')">
+        🛒 <span class="cart-count" id="cart-badge">0</span>
+    </div>
+
+    <footer style="padding: 60px 20px; text-align: center; color: var(--text-dim); border-top: 1px solid var(--border);">
+        <p>Direção Geral: <strong>Félix Romeu Marcos</strong></p>
+        <div style="margin-top: 20px; display: flex; justify-content: center; gap: 20px;">
+            <span onclick="togglePanel('history-panel')" style="cursor: pointer; color: var(--accent);">Meus Pedidos</span>
+            <span onclick="enterAdmin()" style="cursor: pointer;">🔒 Admin</span>
+        </div>
     </footer>
 
     <script>
-        // BANCO DE DADOS DE PRODUTOS CORRIGIDO
-        const produtos = [
-            { id: 1, cat: 'iphone', nome: 'iPhone 17 Pro Max', preco: 1500000, img: 'https://images.unsplash.com/photo-1695048133142-1a20484d256e?w=500' },
-            { id: 2, cat: 'iphone', nome: 'iPhone 15 Pro 256GB', preco: 850000, img: 'https://images.unsplash.com/photo-1696446701796-da61225697cc?w=500' },
-            { id: 3, cat: 'iphone', nome: 'iPhone 11 Apple', preco: 280000, img: 'https://images.unsplash.com/photo-1591337676887-a217a6970a8a?w=500' },
-            { id: 4, cat: 'iphone', nome: 'iPhone 7 Plus Gold', preco: 110000, img: 'https://images.unsplash.com/photo-1556656793-062ff9878256?w=500' },
-            { id: 5, cat: 'samsung', nome: 'Samsung S24 Ultra Titanium', preco: 1100000, img: 'https://images.unsplash.com/photo-1707246544834-3195228e9381?w=500' },
-            { id: 6, cat: 'samsung', nome: 'Samsung Galaxy A54', preco: 240000, img: 'https://images.unsplash.com/photo-1678911820864-e2c567c655d7?w=500' },
-            { id: 7, cat: 'moda', nome: 'Fato Slim Italiano', preco: 150000, img: 'https://images.unsplash.com/photo-1594932224828-b4b057b99cdd?w=500' },
-            { id: 8, cat: 'moda', nome: 'Terno Executivo Black Label', preco: 185000, img: 'https://images.unsplash.com/photo-1598808503744-3d4cff1ee49e?w=500' },
-            { id: 9, cat: 'moda', nome: 'Sapato Social Couro Bovino', preco: 55000, img: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=500' },
-            { id: 10, cat: 'acessorios', nome: 'Fone Bluetooth JBL', preco: 45000, img: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500' },
-            { id: 11, cat: 'acessorios', nome: 'Smartwatch Ultra 2', preco: 380000, img: 'https://images.unsplash.com/photo-1544117518-2b0417813c05?w=500' },
-            { id: 12, cat: 'acessorios', nome: 'Auriculares AirPods Pro', preco: 195000, img: 'https://images.unsplash.com/photo-1588423770574-0100ae22611a?w=500' },
-            { id: 13, cat: 'perfume', nome: 'Perfume Martelot', preco: 11000, img: 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=500' },
-            { id: 14, cat: 'perfume', nome: 'Perfume Zara Black', preco: 18000, img: 'https://images.unsplash.com/photo-1594035910387-fea47794261f?w=500' },
-            { id: 15, cat: 'perfume', nome: 'Perfume Gucci Premium', preco: 18000, img: 'https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=500' }
+        // --- BANCO DE DATOS INICIAL ---
+        const initialProducts = [
+            { id: 1, name: "iPhone 16 Pro Max", price: 1650000, cat: "Smartphones", img: "https://images.unsplash.com/photo-1727103554116-3e042797e871?w=500" },
+            { id: 2, name: "Galaxy S25 Ultra", price: 1300000, cat: "Smartphones", img: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=500" },
+            { id: 3, name: "Fato Safari Slim", price: 85000, cat: "Moda", img: "https://images.unsplash.com/photo-1594932224828-b4b057b99cdd?w=500" },
+            { id: 4, name: "Carolina Herrera Good Girl", price: 95000, cat: "Perfumes", img: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=500" },
+            { id: 5, name: "Nike Air Force 1", price: 45000, cat: "Calçados", img: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=500" },
+            { id: 6, name: "Boné New Era Classic", price: 15000, cat: "Acessórios", img: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=500" },
+            { id: 7, name: "Equipamento Real Madrid 2026", price: 35000, cat: "Desporto", img: "https://images.unsplash.com/photo-1517927033932-b3d18e61fb3a?w=500" }
         ];
 
-        let cart = [];
-        let userData = { nome: "", data: "" };
-        let salesToday = 0;
+        let products = JSON.parse(localStorage.getItem('frm_db')) || initialProducts;
+        let cart = JSON.parse(localStorage.getItem('frm_cart')) || [];
+        let history = JSON.parse(localStorage.getItem('frm_history')) || [];
+        let currentUser = localStorage.getItem('frm_user') || "";
 
-        // CADASTRO INICIAL
-        function concluirCadastro() {
-            const nome = document.getElementById('user-nome').value;
-            const data = document.getElementById('user-data').value;
-            
-            if(!nome || !data) return alert("Félix diz: Preencha seus dados para continuar!");
+        // --- INICIALIZAÇÃO ---
+        window.onload = () => {
+            if(currentUser) {
+                document.getElementById('auth-overlay').style.transform = 'translateY(-100%)';
+                document.getElementById('user-greeting').innerText = `Olá, ${currentUser}`;
+            }
+            renderProducts();
+            renderCategories();
+            updateCartUI();
+        };
 
-            userData = { nome, data };
-            document.getElementById('tela-bloqueio').style.transform = "translateY(-100%)";
-            document.getElementById('welcome-msg').innerText = `Bem-vindo, ${nome}!`;
-            renderizar(produtos);
+        // --- AUTH ---
+        function login() {
+            const name = document.getElementById('user-name-input').value;
+            if(!name) return alert("Por favor, diga-nos seu nome.");
+            currentUser = name;
+            localStorage.setItem('frm_user', name);
+            document.getElementById('auth-overlay').style.transform = 'translateY(-100%)';
+            document.getElementById('user-greeting').innerText = `Olá, ${currentUser}`;
         }
 
-        // RENDERIZAÇÃO DA VITRINE
-        function renderizar(lista) {
-            const vitrine = document.getElementById('vitrine-principal');
-            vitrine.innerHTML = lista.map(p => `
+        // --- NAVEGAÇÃO & FILTROS ---
+        function renderCategories() {
+            const cats = ['todos', ...new Set(products.map(p => p.cat))];
+            const list = document.getElementById('cat-list');
+            list.innerHTML = cats.map(c => `
+                <button class="cat-tag ${c === 'todos' ? 'active' : ''}" onclick="filterProducts('${c}', this)">
+                    ${c}
+                </button>
+            `).join('');
+        }
+
+        function filterProducts(cat, btn) {
+            if(btn) {
+                document.querySelectorAll('.cat-tag').forEach(t => t.classList.remove('active'));
+                btn.classList.add('active');
+            }
+            const filtered = cat === 'todos' ? products : products.filter(p => p.cat === cat);
+            renderProducts(filtered);
+        }
+
+        // --- VITRINE ---
+        function renderProducts(data = products) {
+            const vitrine = document.getElementById('main-vitrine');
+            vitrine.innerHTML = data.map(p => `
                 <div class="card">
-                    <img src="${p.img}" alt="${p.nome}">
-                    <div class="card-body">
-                        <h3>${p.nome}</h3>
-                        <span class="price">${p.preco.toLocaleString()} Kz</span>
-                        <button class="btn-cart" onclick="addToCart(${p.id})">Adicionar</button>
+                    <div class="card-img-box">
+                        <img src="${p.img}" class="card-img" alt="${p.name}">
+                    </div>
+                    <div class="card-content">
+                        <div class="card-title">${p.name}</div>
+                        <div class="card-price">${p.price.toLocaleString()} Kz</div>
+                        <div class="variations">
+                            ${getVariationHTML(p.cat)}
+                        </div>
+                        <button class="btn btn-gold" style="width: 100%;" onclick="addToCart(${p.id})">ADICIONAR</button>
                     </div>
                 </div>
             `).join('');
         }
 
-        // FILTROS
-        function filtrar(categoria, btn) {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            
-            if(categoria === 'todos') {
-                renderizar(produtos);
-            } else {
-                const filtrados = produtos.filter(p => p.cat === categoria);
-                renderizar(filtrados);
-            }
+        function getVariationHTML(cat) {
+            if(cat === 'Calçados') return `<select class="variation-select"><option>Tam: 40</option><option>Tam: 42</option></select><select class="variation-select"><option>Branco</option><option>Preto</option></select>`;
+            if(cat === 'Moda') return `<select class="variation-select"><option>Tam: M</option><option>Tam: L</option></select><select class="variation-select"><option>Preto</option><option>Slim</option></select>`;
+            return `<select class="variation-select" style="grid-column: span 2;"><option>Padrão Original</option><option>Premium Plus</option></select>`;
         }
 
-        // CARRINHO
+        // --- CARRINHO ---
+        function togglePanel(id) {
+            document.getElementById(id).classList.toggle('panel-open');
+        }
+
         function addToCart(id) {
-            const item = produtos.find(p => p.id === id);
-            cart.push(item);
-            atualizarCartUI();
-            document.getElementById('carrinho-painel').style.display = 'block';
+            const item = products.find(p => p.id === id);
+            cart.push({...item, cartId: Date.now()});
+            saveCart();
+            updateCartUI();
+            togglePanel('cart-panel');
         }
 
-        function atualizarCartUI() {
-            const listaUI = document.getElementById('lista-pedido');
-            const totalUI = document.getElementById('total-final');
-            listaUI.innerHTML = cart.map(i => `<li><span>${i.nome}</span> <b>${i.preco.toLocaleString()} Kz</b></li>`).join('');
+        function updateCartUI() {
+            const list = document.getElementById('cart-items');
+            const badge = document.getElementById('cart-badge');
+            const totalDisplay = document.getElementById('cart-total');
             
-            const total = cart.reduce((acc, i) => acc + i.preco, 0);
-            totalUI.innerText = total.toLocaleString();
-        }
-
-        function toggleCart() {
-            const p = document.getElementById('carrinho-painel');
-            p.style.display = p.style.display === 'block' ? 'none' : 'block';
-        }
-
-        function enviarWhatsApp() {
-            if(cart.length === 0) return alert("Seu carrinho está vazio!");
-            
-            let msg = `*NOVO PEDIDO - TUDO EM UM SÓ LUGAR*%0A%0A`;
-            msg += `*Cliente:* ${userData.nome}%0A`;
-            msg += `*Itens do Pedido:*%0A`;
-            
+            badge.innerText = cart.length;
             let total = 0;
-            cart.forEach(i => {
-                msg += `- ${i.nome} (${i.preco.toLocaleString()} Kz)%0A`;
-                total += i.preco;
-            });
             
-            msg += `%0A*VALOR TOTAL:* ${total.toLocaleString()} Kz`;
+            list.innerHTML = cart.map((item, index) => {
+                total += item.price;
+                return `
+                    <div class="cart-item">
+                        <div>
+                            <strong>${item.name}</strong><br>
+                            <small>${item.price.toLocaleString()} Kz</small>
+                        </div>
+                        <button onclick="removeFromCart(${index})" style="color: var(--danger); background: none; border: none; cursor:pointer;">Remover</button>
+                    </div>
+                `;
+            }).join('');
             
-            salesToday++;
-            window.open(`https://wa.me/244941044772?text=${msg}`);
+            totalDisplay.innerText = total.toLocaleString() + " Kz";
         }
 
-        // LÓGICA ADMIN
-        function abrirAdmin() { document.getElementById('admin-modal').style.display = 'flex'; }
-        function fecharAdmin() { document.getElementById('admin-modal').style.display = 'none'; }
-        
-        function validarAdmin() {
-            const senha = document.getElementById('pass-admin').value;
-            if(senha === "felesema9") {
-                document.getElementById('admin-data').style.display = 'block';
-                document.getElementById('count-vendas').innerText = salesToday;
-            } else {
-                alert("ACESSO NEGADO.");
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            saveCart();
+            updateCartUI();
+        }
+
+        function saveCart() { localStorage.setItem('frm_cart', JSON.stringify(cart)); }
+
+        function checkout() {
+            if(cart.length === 0) return alert("Carrinho vazio!");
+            
+            const total = cart.reduce((s, i) => s + i.price, 0);
+            const date = new Date().toLocaleString();
+            
+            const order = { user: currentUser, date, total, items: cart.length };
+            history.unshift(order);
+            localStorage.setItem('frm_history', JSON.stringify(history));
+            
+            let text = `*NOVO PEDIDO - FRM BOUTIQUE*%0A*Cliente:* ${currentUser}%0A%0A*Itens:*%0A`;
+            cart.forEach(i => text += `- ${i.name} (${i.price.toLocaleString()} Kz)%0A`);
+            text += `%0A*TOTAL:* ${total.toLocaleString()} Kz`;
+            
+            window.open(`https://wa.me/244941044772?text=${text}`);
+            cart = [];
+            saveCart();
+            updateCartUI();
+            togglePanel('cart-panel');
+            renderHistory();
+        }
+
+        // --- HISTÓRICO ---
+        function renderHistory() {
+            const list = document.getElementById('history-items');
+            list.innerHTML = history.map(h => `
+                <div style="background: var(--glass); padding: 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid var(--border);">
+                    <small style="color: var(--accent);">${h.date}</small><br>
+                    <strong>Total: ${h.total.toLocaleString()} Kz</strong><br>
+                    <small>${h.items} produtos comprados</small>
+                </div>
+            `).join('');
+        }
+        renderHistory();
+
+        // --- ADMIN ---
+        function enterAdmin() {
+            const p = prompt("Senha Administrativa:");
+            if(p === "felesema9") toggleAdmin();
+            else alert("Acesso negado.");
+        }
+
+        function toggleAdmin() {
+            const p = document.getElementById('admin-panel');
+            p.style.display = p.style.display === 'block' ? 'none' : 'block';
+            if(p.style.display === 'block') renderAdminList();
+        }
+
+        function addProduct() {
+            const n = document.getElementById('adm-name').value;
+            const p = document.getElementById('adm-price').value;
+            const i = document.getElementById('adm-img').value;
+            const c = document.getElementById('adm-cat').value;
+
+            if(!n || !p || !i) return alert("Preencha todos os campos!");
+
+            products.push({ id: Date.now(), name: n, price: parseInt(p), img: i, cat: c });
+            saveDB();
+            renderProducts();
+            renderCategories();
+            renderAdminList();
+            alert("Produto Adicionado!");
+        }
+
+        function renderAdminList() {
+            const list = document.getElementById('admin-list');
+            list.innerHTML = products.map((p, idx) => `
+                <div style="display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #333;">
+                    <span>${p.name}</span>
+                    <button onclick="deleteProduct(${idx})" style="color: red; border: none; background: none; cursor: pointer;">Excluir</button>
+                </div>
+            `).join('');
+        }
+
+        function deleteProduct(idx) {
+            if(confirm("Deseja excluir este produto?")) {
+                products.splice(idx, 1);
+                saveDB();
+                renderProducts();
+                renderCategories();
+                renderAdminList();
             }
         }
+
+        function saveDB() { localStorage.setItem('frm_db', JSON.stringify(products)); }
     </script>
 </body>
 </html>
