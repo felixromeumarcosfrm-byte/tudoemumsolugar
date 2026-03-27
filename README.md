@@ -1,41 +1,150 @@
-[README.md](https://github.com/user-attachments/files/26289542/README.md)
-# 🛒 Tudo em um só Lugar - E-commerce Angola
+ [README.md](https://github.com/user-attachments/files/26304659/README.md)
+# 🛍️ FRM Boutique — Ecossistema Digital
 
-![Status do Projeto](https://img.shields.io/badge/Status-Em%20Desenvolvimento-green)
-![Linguagem](https://img.shields.io/badge/Linguagem-HTML5%20%2F%20CSS3%20%2F%20JS-orange)
+## 📌 Descrição
 
-Uma plataforma de vendas online leve e responsiva, focada no mercado de Angola, desenvolvida por **Félix Romeu Marcos**. O projeto unifica a experiência de compra com a facilidade de finalização via WhatsApp.
+Este projeto é uma loja virtual completa desenvolvida em **HTML, CSS e JavaScript puro**, chamada **FRM Boutique**.
+O sistema simula um e-commerce moderno com funcionalidades essenciais como vitrine de produtos, carrinho de compras, autenticação de usuário e painel administrativo.
 
-## 🚀 Funcionalidades
+---
 
-- **Catálogo Dinâmico:** Listagem de produtos premium (Smartphones, Perfumes, Acessórios).
-- **Carrinho em Tempo Real:** Cálculo automático de subtotais e totalização.
-- **Cadastro de Cliente:** Captura de nome e data de nascimento para personalização.
-- **Integração WhatsApp:** Envio automático dos dados do pedido e do cliente diretamente para o vendedor.
-- **SEO & Social Media:** Meta tags otimizadas para busca no Google e compartilhamento em redes sociais.
-- **Design Responsivo:** Adaptado para computadores, tablets e smartphones.
+## 🚀 Funcionalidades principais
 
-## 🛠️ Tecnologias Utilizadas
+### 🔐 Autenticação de usuário
 
-Este projeto foi construído utilizando o conceito de **Single File Architecture** (Arquitetura de Arquivo Único) para máxima performance e facilidade de deploy:
+* Tela inicial para identificação do cliente
+* Saudação personalizada após login
+* Dados guardados no **localStorage**
 
-* **HTML5 Semântico:** Para melhor acessibilidade e indexação (SEO).
-* **CSS3 Moderno:** Uso de *Flexbox*, *Grid* e *Variáveis CSS* para um design limpo e modular.
-* **JavaScript Vanilla:** Lógica de carrinho e manipulação do DOM sem dependência de bibliotecas externas (No React/No jQuery).
+---
 
-## 📦 Como rodar o projeto
+### 🛒 Vitrine de produtos
 
-1. Faça o download do arquivo `index.html`.
-2. Abra o arquivo em qualquer navegador (Chrome, Edge, Firefox).
-3. Para colocar online: Suba o arquivo para um repositório no **GitHub** e ative o **GitHub Pages**.
+* Exibição dinâmica de produtos (grid responsivo)
+* Categorias automáticas (Smartphones, Moda, Perfumes, etc.)
+* Filtro por categorias
+* Imagens e preços formatados em Kwanza (Kz)
+
+---
+
+### 🧺 Carrinho de compras
+
+* Adicionar/remover produtos
+* Contador de itens
+* Cálculo automático do total
+* Persistência de dados no navegador
+
+---
+
+### 📦 Finalização de pedido
+
+* Integração com **WhatsApp**
+* Geração automática da mensagem de compra
+* Histórico de pedidos salvo localmente
+
+---
+
+### 📜 Histórico de compras
+
+* Registro de pedidos realizados
+* Exibição de data, total e quantidade de itens
+
+---
+
+### ⚙️ Painel administrativo
+
+* Acesso protegido por senha (`admin123`)
+* Adicionar novos produtos
+* Excluir produtos existentes
+* Atualização dinâmica da loja
+
+---
+
+## 🗂️ Estrutura de dados
+
+### Produtos
+
+```js
+{
+  id: number,
+  name: string,
+  price: number,
+  cat: string,
+  img: string
+}
+```
+
+### Carrinho
+
+* Lista de produtos adicionados
+* Armazenado em `localStorage`
+
+### Histórico
+
+* Registro de pedidos realizados
+* Inclui: cliente, data, total e quantidade
+
+---
+
+## 💾 Armazenamento
+
+O sistema utiliza **localStorage** para:
+
+* Produtos (`frm_db`)
+* Carrinho (`frm_cart`)
+* Histórico (`frm_history`)
+* Usuário (`frm_user`)
+
+---
+
+## 🎨 Design
+
+* Interface moderna com tema escuro
+* Destaques em dourado (luxo)
+* Responsivo (funciona em telemóvel e desktop)
+* Animações suaves e interativas
+
+---
+
+## 📱 Categorias disponíveis
+
+* Smartphones
+* Moda
+* Calçados
+* Perfumes
+* Acessórios
+* Desporto
+
+---
+
+## ⚠️ Limitações
+
+* Não possui backend (não é um sistema real de pagamento)
+* Dados podem ser perdidos ao limpar o navegador
+* Segurança básica (senha fixa no código)
+
+---
+
+## 🔥 Melhorias recomendadas
+
+* Integrar com banco de dados real (Firebase ou Node.js)
+* Implementar sistema de pagamento automático
+* Criar login com autenticação segura
+* Adicionar sistema de entrega e rastreamento
+
+---
+
+## 📌 Conclusão
+
+Este projeto é uma base sólida para um e-commerce moderno, ideal para:
+
+* Testes de negócio
+* Portfólio
+* Início de uma loja online real
+
+---
 
 ## 👤 Autor
 
 **Félix Romeu Marcos**
-* **WhatsApp:** 941044772
-* **E-mail:** [felixromeumarcosfrm@gmail.com](mailto:felixromeumarcosfrm@gmail.com)
-* **Telegram:** @941044772
-* **Instagram:[felixromeumarcosfrm@gmail.com]
-
----
-*Este projeto faz parte do meu portfólio de desenvolvedor focado em soluções práticas para o comércio digital.*
+Diretor Geral — FRM Boutique
