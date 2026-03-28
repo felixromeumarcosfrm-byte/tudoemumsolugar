@@ -1,5 +1,5 @@
  [README.md](https://github.com/user-attachments/files/26304659/README.md)
-# 🛍️ FRM Boutique — Ecossistema Digital
+# 🛍️ FRM Boutique Tudo em um só lugar — Ecossistema Digital
 
 ## 📌 Descrição
 
