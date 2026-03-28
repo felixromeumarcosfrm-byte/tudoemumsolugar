@@ -1,452 +1,410 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TUDO EM UM SÓ LUGAR | Ecossistema Digital Félix</title>
+    <title>FRM | TUDO EM UM SÓ LUGAR - Oficial</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
-    
     <style>
         :root {
-            --primary: #050505;
-            --secondary: #121212;
-            --accent: #d4af37; /* Gold */
-            --accent-hover: #b8962d;
-            --text-main: #ffffff;
-            --text-dim: #a0a0a0;
-            --success: #22c55e;
-            --danger: #ef4444;
-            --glass: rgba(255, 255, 255, 0.03);
-            --border: rgba(255, 255, 255, 0.1);
+            --primary: #050505; --secondary: #121212; --accent: #d4af37;
+            --text-main: #ffffff; --text-dim: #a0a0a0; --border: rgba(255, 255, 255, 0.1);
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: var(--primary); color: var(--text-main); line-height: 1.6; }
 
-        body {
-            background-color: var(--primary);
-            color: var(--text-main);
-            overflow-x: hidden;
-            line-height: 1.6;
-        }
+        /* --- HEADER --- */
+        header { padding: 40px 20px; text-align: center; border-bottom: 2px solid var(--accent); background: linear-gradient(to bottom, #1a1a1a, #050505); }
+        .logo { font-size: 2.2rem; font-weight: 800; color: var(--accent); letter-spacing: -1px; }
 
-        /* --- SCROLLBAR --- */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--primary); }
-        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
-
-        /* --- LOGIN SCREEN --- */
-        #auth-overlay {
-            position: fixed; inset: 0; background: var(--primary); z-index: 10000;
-            display: flex; justify-content: center; align-items: center;
-            transition: transform 0.8s cubic-bezier(0.87, 0, 0.13, 1);
-        }
-        .auth-card {
-            background: var(--secondary); padding: 40px; border-radius: 24px;
-            width: 90%; max-width: 400px; border: 1px solid var(--border); text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-        .auth-card h1 { font-weight: 800; margin-bottom: 10px; color: var(--accent); }
-        
-        /* --- REUSABLE COMPONENTS --- */
-        input, select, textarea {
-            width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px;
-            border: 1px solid var(--border); background: #1a1a1a; color: white; outline: none;
-        }
-        .btn {
-            cursor: pointer; border: none; border-radius: 12px; font-weight: 600;
-            padding: 14px 24px; transition: 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-        }
-        .btn-gold { background: var(--accent); color: var(--primary); }
-        .btn-gold:hover { background: var(--accent-hover); transform: translateY(-2px); }
-        .btn-outline { background: transparent; border: 1px solid var(--border); color: white; }
-
-        /* --- HEADER & NAVIGATION --- */
-        header { padding: 60px 20px 20px; text-align: center; }
-        .logo { font-size: 2.8rem; font-weight: 800; letter-spacing: -2px; color: var(--accent); margin-bottom: 5px; }
-        
-        .nav-wrapper {
-            position: sticky; top: 0; background: rgba(5, 5, 5, 0.8);
-            backdrop-filter: blur(20px); z-index: 900; padding: 15px 0; border-bottom: 1px solid var(--border);
-        }
-        .categories {
-            display: flex; overflow-x: auto; gap: 12px; padding: 0 20px;
-            max-width: 1200px; margin: 0 auto; scrollbar-width: none;
-        }
-        .categories::-webkit-scrollbar { display: none; }
-        .cat-tag {
-            white-space: nowrap; padding: 8px 18px; border-radius: 30px;
-            background: var(--glass); border: 1px solid var(--border);
-            cursor: pointer; font-size: 0.85rem; transition: 0.3s;
-        }
-        .cat-tag.active { background: var(--accent); color: var(--primary); border-color: var(--accent); }
+        /* --- NAVIGATION & FILTERS --- */
+        .nav-section { position: sticky; top: 0; background: rgba(5,5,5,0.95); backdrop-filter: blur(10px); z-index: 1000; padding: 15px 0; border-bottom: 1px solid var(--border); }
+        .filter-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; flex-direction: column; gap: 10px; }
+        .scroll-row { display: flex; overflow-x: auto; gap: 10px; scrollbar-width: none; }
+        .btn-cat { padding: 8px 18px; border-radius: 20px; border: 1px solid var(--border); background: #1a1a1a; color: var(--text-dim); cursor: pointer; white-space: nowrap; font-size: 0.8rem; font-weight: 600; }
+        .btn-cat.active { background: var(--accent); color: black; border-color: var(--accent); }
+        .btn-sub { font-size: 0.7rem; padding: 5px 12px; background: #222; }
 
         /* --- VITRINE --- */
-        .container { max-width: 1400px; margin: 40px auto; padding: 0 20px; }
-        .products-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 30px;
-        }
-        .card {
-            background: var(--secondary); border-radius: 20px; overflow: hidden;
-            border: 1px solid var(--border); transition: 0.4s; position: relative;
-        }
-        .card:hover { transform: translateY(-10px); border-color: var(--accent); }
-        .card-img-box { position: relative; width: 100%; height: 300px; overflow: hidden; }
-        .card-img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
-        .card:hover .card-img { scale: 1.1; }
-        .card-content { padding: 20px; }
-        .card-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 10px; }
-        .card-price { font-size: 1.4rem; font-weight: 800; color: var(--accent); }
+        .container { max-width: 1400px; margin: 30px auto; padding: 0 20px; }
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 25px; }
+        .card { background: var(--secondary); border-radius: 15px; border: 1px solid var(--border); overflow: hidden; transition: 0.3s; display: flex; flex-direction: column; }
+        .card:hover { border-color: var(--accent); transform: translateY(-5px); }
+        .card-img { width: 100%; height: 240px; object-fit: cover; }
+        .card-body { padding: 15px; flex-grow: 1; }
+        .card-brand { font-size: 0.65rem; color: var(--accent); font-weight: 800; text-transform: uppercase; }
+        .card-title { font-size: 0.95rem; font-weight: 600; margin: 5px 0; height: 2.5em; overflow: hidden; }
         
-        .variations { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
-        .variation-select { margin: 0; padding: 8px; font-size: 0.75rem; border-radius: 8px; }
+        /* ATRIBUTOS NO CARD */
+        .attr-box { margin: 10px 0; display: flex; flex-direction: column; gap: 8px; }
+        select.attr-select { width: 100%; padding: 8px; border-radius: 8px; background: #000; color: white; border: 1px solid #333; font-size: 0.75rem; }
 
-        /* --- SIDE PANELS (CARRINHO / HISTORICO) --- */
-        .side-panel {
-            position: fixed; top: 0; right: -100%; width: 400px; height: 100%;
-            background: var(--secondary); z-index: 2000; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 40px; box-shadow: -20px 0 50px rgba(0,0,0,0.8);
-            display: flex; flex-direction: column; border-left: 1px solid var(--border);
-        }
-        .panel-open { right: 0; }
-        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .item-list { flex-grow: 1; overflow-y: auto; }
-        .cart-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 0; border-bottom: 1px solid var(--border);
-        }
+        .price { font-size: 1.2rem; font-weight: 800; color: var(--accent); margin-bottom: 10px; }
+        .btn-buy { width: 100%; padding: 12px; border-radius: 10px; border: none; background: var(--accent); color: black; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .btn-buy:hover { background: #b8962d; }
 
-        /* --- ADMIN PANEL --- */
-        #admin-panel {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 5000;
-            display: none; padding: 40px; overflow-y: auto;
-        }
-        .admin-modal { background: var(--secondary); max-width: 700px; margin: 0 auto; padding: 40px; border-radius: 24px; border: 1px solid var(--accent); }
+        /* --- PANELS --- */
+        .panel { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; display: none; padding: 20px; overflow-y: auto; }
+        .panel-content { max-width: 500px; margin: 40px auto; background: var(--secondary); padding: 30px; border-radius: 20px; border: 1px solid var(--accent); }
+        input, select { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; background: #1a1a1a; color: white; border: 1px solid var(--border); }
+        
+        .cart-float { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: var(--accent); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 1500; font-size: 1.5rem; box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
+        .badge { position: absolute; top: 0; right: 0; background: white; color: black; font-size: 0.7rem; font-weight: bold; width: 20px; height: 20px; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
 
-        /* --- FLOATING ACTIONS --- */
-        .fab {
-            position: fixed; bottom: 30px; right: 30px; width: 64px; height: 64px;
-            border-radius: 20px; background: var(--accent); color: var(--primary);
-            display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3); z-index: 1000; cursor: pointer;
-        }
-        .cart-count {
-            position: absolute; top: -5px; right: -5px; background: white;
-            color: black; font-size: 0.7rem; font-weight: bold; width: 22px; height: 22px;
-            border-radius: 50%; display: flex; justify-content: center; align-items: center;
-        }
-
-        @media (max-width: 500px) {
-            .side-panel { width: 100%; }
-            .logo { font-size: 2rem; }
-        }
+        /* --- ADMIN TABS --- */
+        .admin-btn { position: fixed; bottom: 30px; left: 30px; font-size: 0.7rem; color: var(--text-dim); cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div id="auth-overlay">
-        <div class="auth-card">
-            <h1>FRM | BOUTIQUE</h1>
-            <p style="color: var(--text-dim); margin-bottom: 30px;">Identifique-se para o atendimento personalizado.</p>
-            <input type="text" id="user-name-input" placeholder="Seu Nome Completo">
-            <button class="btn btn-gold" style="width: 100%;" onclick="login()">ENTRAR NA LOJA</button>
-        </div>
-    </div>
-
     <header>
         <div class="logo">TUDO EM UM SÓ LUGAR</div>
-        <p id="user-greeting" style="color: var(--accent); font-weight: 600;"></p>
+        <p style="color: var(--text-dim); font-size: 0.8rem;">Direção: Félix Romeu Marcos</p>
     </header>
 
-    <div class="nav-wrapper">
-        <div class="categories" id="cat-list">
-            <button class="cat-tag active" onclick="filterProducts('todos')">Tudo</button>
-            </div>
+    <div class="nav-section">
+        <div class="filter-container">
+            <div class="scroll-row" id="main-cats">
+                </div>
+            <div class="scroll-row" id="sub-cats">
+                </div>
+        </div>
     </div>
 
     <main class="container">
-        <div class="products-grid" id="main-vitrine">
-            </div>
+        <div class="products-grid" id="product-display"></div>
     </main>
 
-    <div id="cart-panel" class="side-panel">
-        <div class="panel-header">
-            <h2>Seu Pedido</h2>
-            <button onclick="togglePanel('cart-panel')" class="btn-outline" style="padding: 5px 12px;">X</button>
-        </div>
-        <div class="item-list" id="cart-items"></div>
-        <div style="padding-top: 20px; border-top: 1px solid var(--border);">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-                <span>Total Estimado:</span>
-                <span id="cart-total" style="font-size: 1.5rem; font-weight: 800; color: var(--accent);">0 Kz</span>
+    <div id="cart-panel" class="panel">
+        <div class="panel-content">
+            <h2 style="color: var(--accent)">Seu Carrinho</h2>
+            <div id="cart-items" style="margin: 20px 0;"></div>
+            <hr style="border: 0; border-top: 1px solid #333; margin: 15px 0;">
+            <h3>Endereço de Entrega</h3>
+            <input type="text" id="cust-address" placeholder="Bairro, Rua, Casa nº">
+            <input type="text" id="cust-name" placeholder="Seu Nome">
+            <div style="display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: 800; margin: 15px 0;">
+                <span>Total:</span> <span id="cart-total" style="color: var(--accent)">0 Kz</span>
             </div>
-            <button class="btn btn-gold" style="width: 100%; background: #25d366; color: white;" onclick="checkout()">FINALIZAR NO WHATSAPP</button>
+            <button class="btn-buy" style="background: #25d366; color: white;" onclick="checkout()">FINALIZAR WHATSAPP</button>
+            <button class="btn-buy" style="background: transparent; color: #ff4444; margin-top: 10px;" onclick="closePanels()">FECHAR</button>
         </div>
     </div>
 
-    <div id="history-panel" class="side-panel">
-        <div class="panel-header">
-            <h2>Meu Histórico</h2>
-            <button onclick="togglePanel('history-panel')" class="btn-outline">X</button>
-        </div>
-        <div class="item-list" id="history-items"></div>
-    </div>
-
-    <div id="admin-panel">
-        <div class="admin-modal">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-                <h2>Painel do Diretor Félix</h2>
-                <button onclick="toggleAdmin()" class="btn-outline">Fechar</button>
-            </div>
-            
-            <div id="admin-form">
-                <h3>Adicionar Novo Produto</h3>
-                <input type="text" id="adm-name" placeholder="Nome do Produto">
-                <input type="number" id="adm-price" placeholder="Preço (Kz)">
-                <input type="text" id="adm-img" placeholder="URL da Imagem">
-                <select id="adm-cat">
-                    <option value="Smartphones">Smartphones</option>
-                    <option value="Moda">Moda</option>
-                    <option value="Calçados">Calçados</option>
-                    <option value="Perfumes">Perfumes</option>
-                    <option value="Acessórios">Acessórios</option>
-                    <option value="Desporto">Desporto</option>
-                </select>
-                <button class="btn btn-gold" style="width: 100%;" onclick="addProduct()">SALVAR PRODUTO</button>
-            </div>
-            
-            <hr style="margin: 30px 0; opacity: 0.1;">
-            <h3>Produtos Atuais</h3>
-            <div id="admin-list" style="margin-top: 20px;"></div>
+    <div id="admin-panel" class="panel">
+        <div class="panel-content">
+            <h2>Cadastrar Novo Produto</h2>
+            <input type="text" id="adm-name" placeholder="Nome do Produto (Ex: iPhone 16 Pro)">
+            <input type="number" id="adm-price" placeholder="Preço (Kz)">
+            <input type="text" id="adm-img" placeholder="URL da Imagem">
+            <select id="adm-cat-main">
+                <option value="Smartphones">Smartphones</option>
+                <option value="Perfumes">Perfumes</option>
+                <option value="Moda">Moda</option>
+                <option value="Calçados">Calçados</option>
+                <option value="Desporto">Desporto</option>
+                <option value="Relógios">Relógios</option>
+                <option value="Acessórios">Acessórios</option>
+            </select>
+            <input type="text" id="adm-sub" placeholder="Sub-categoria (Ex: Apple, Zara, Árabe)">
+            <button class="btn-buy" onclick="saveNewProduct()">CADASTRAR PRODUTO</button>
+            <button class="btn-buy" style="background: #444; margin-top: 10px;" onclick="closePanels()">VOLTAR</button>
         </div>
     </div>
 
-    <div class="fab" onclick="togglePanel('cart-panel')">
-        🛒 <span class="cart-count" id="cart-badge">0</span>
+    <div class="cart-float" onclick="openCart()">
+        🛒 <div class="badge" id="cart-badge">0</div>
     </div>
 
-    <footer style="padding: 60px 20px; text-align: center; color: var(--text-dim); border-top: 1px solid var(--border);">
-        <p>Direção Geral: <strong>Félix Romeu Marcos</strong></p>
-        <div style="margin-top: 20px; display: flex; justify-content: center; gap: 20px;">
-            <span onclick="togglePanel('history-panel')" style="cursor: pointer; color: var(--accent);">Meus Pedidos</span>
-            <span onclick="enterAdmin()" style="cursor: pointer;">🔒 Admin</span>
-        </div>
-    </footer>
+    <div class="admin-btn" onclick="openAdmin()">🔒 Acesso Admin</div>
 
     <script>
-        // --- BANCO DE DATOS INICIAL ---
-        const initialProducts = [
-            { id: 1, name: "iPhone 16 Pro Max", price: 1650000, cat: "Smartphones", img: "https://images.unsplash.com/photo-1727103554116-3e042797e871?w=500" },
-            { id: 2, name: "Galaxy S25 Ultra", price: 1300000, cat: "Smartphones", img: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=500" },
-            { id: 3, name: "Fato Safari Slim", price: 85000, cat: "Moda", img: "https://images.unsplash.com/photo-1594932224828-b4b057b99cdd?w=500" },
-            { id: 4, name: "Carolina Herrera Good Girl", price: 95000, cat: "Perfumes", img: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=500" },
-            { id: 5, name: "Nike Air Force 1", price: 45000, cat: "Calçados", img: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=500" },
-            { id: 6, name: "Boné New Era Classic", price: 15000, cat: "Acessórios", img: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=500" },
-            { id: 7, name: "Equipamento Real Madrid 2026", price: 35000, cat: "Desporto", img: "https://images.unsplash.com/photo-1517927033932-b3d18e61fb3a?w=500" }
+        // --- BANCO DE DADOS REPARADO ---
+    const initialDb = [
+            // IPHONES
+            { name: "iPhone 7", price: 70000, cat: "Smartphones", sub: "Apple", img: "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=400", options: ["Preto", "Prata", "Rose"], sizes: ["32GB", "128GB"] },
+            { name: "iPhone 7 Plus", price: 78000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/7068406/pexels-photo-7068406.jpeg", options: ["Preto", "Prata", "Rose"], sizes: ["32GB", "128GB"] },
+            { name: "iPhone 8", price: 120000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/3934704/pexels-photo-3934704.jpeg", options: ["Preto", "Prata", "Rose"], sizes: ["32GB", "128GB"] },
+            { name: "iPhone 8 Plus", price: 140000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/3934704/pexels-photo-3934704.jpeg", options: ["Preto", "Prata", "Rose"], sizes: ["32GB", "128GB"] },
+            { name: "iPhone X", price: 220000, cat: "Smartphones", sub: "Apple", img: "https://images.unsplash.com/photo-1519923041107-e4dc8d9193da?w=400", options: ["Space Grey", "Silver"], sizes: ["64GB", "256GB"] },
+            { name: "iPhone XR", price: 250000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/3036882/pexels-photo-3036882.jpeg", options: ["Preto", "Prata", "Rose"], sizes: ["32GB", "128GB"] },
+            { name: "iPhone XS", price: 270000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/3651803/pexels-photo-3651803.jpeg", options: ["Preto", "Prata", "Rose"], sizes: ["32GB", "128GB"] },
+            { name: "iPhone 11", price: 310000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/4645502/pexels-photo-4645502.jpeg", options: ["Preto", "Prata", "Rose"], sizes: ["32GB", "128GB"] },
+            { name: "iPhone 11 Pro", price: 340000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/4645502/pexels-photo-4645502.jpeg", options: ["Preto", "Prata", "Rose"], sizes: ["64GB", "128GB"] },
+            { name: "iPhone 11 Pro Max", price: 380000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/6751554/pexels-photo-6751554.jpeg", options: ["Preto", "Prata", "Rose"], sizes: ["64GB", "128GB"] },
+            { name: "iPhone 12", price: 410000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/5750001/pexels-photo-5750001.jpeg", options: ["Preto", "Prata", "Rose"], sizes: ["64GB", "128GB"] },
+            { name: "iPhone 12 Pro", price: 450000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/6608247/pexels-photo-6608247.jpeg", options: ["Preto", "Prata", "Rose"], sizes: ["64GB", "128GB"] },
+            { name: "iPhone 12 Pro Max", price: 490000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/6751555/pexels-photo-6751555.jpeg", options: ["Preto", "Prata", "Rose"], sizes: ["64GB", "128GB"] },
+            { name: "iPhone 13", price: 520000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/18403788/pexels-photo-18403788.jpeg", options: ["Preto", "Prata", "Rose"], sizes: ["64GB", "128GB"] },
+            { name: "iPhone 13 Pro", price: 540000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/18403793/pexels-photo-18403793.jpeg", options: ["Preto", "Prata", "Rose"], sizes: ["32GB", "128GB"] },
+            { name: "iPhone 13 Pro Max", price: 560000, cat: "Smartphones", sub: "Apple", img: "https://images.unsplash.com/photo-1632661674596-df8be070a5c5?w=400", options: ["Sierra Blue", "Graphite"], sizes: ["128GB", "256GB", "512GB"] },
+            { name: "iPhone 14", price: 595000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/18403793/pexels-photo-18403793.jpeg", options: ["Preto", "Prata", "Rose"], sizes: ["128GB", "256GB", "512GB"] },
+            { name: "iPhone 14 Pro", price: 620000, cat: "Smartphones", sub: "Apple", img: "https://pixabay.com/images/download/x-7479303_1920.jpg", options: ["Preto", "Prata", "Rose"], sizes: ["128GB", "256GB", "512GB"] },
+            { name: "iPhone 14 Pro Max", price: 650000, cat: "Smartphones", sub: "Apple", img: "https://pixabay.com/images/download/x-6884672_1920.jpg", options: ["Preto", "Prata", "Rose"], sizes: ["128GB", "256GB", "512GB"] },
+            { name: "iPhone 15", price: 750000, cat: "Smartphones", sub: "Apple", img: "https://pixabay.com/images/download/x-7479302_1920.jpg", options: ["Preto", "Prata", "Rose"], sizes: ["128GB", "256GB", "512GB"] },
+            { name: "iPhone 16", price: 850000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/7745561/pexels-photo-7745561.jpeg", options: ["Preto", "Prata", "Rose"], sizes: ["256GB", "512GB"] },
+            { name: "iPhone 16 Pro Max", price: 890000, cat: "Smartphones", sub: "Apple", img: "https://images.unsplash.com/photo-1727103554116-3e042797e871?w=400", options: ["Titanium", "Black"], sizes: ["256GB", "512GB", "1TB"] },
+    
+            //SAMSUNG
+            { name: "iPhone 17", price: 1200000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/34624327/pexels-photo-34624327.jpeg", options: ["Preto", "Prata", "Laranja"], sizes: ["512GB", "1TB"] },
+            { name: "Galaxy S25 Ultra", price: 1350000, cat: "Smartphones", sub: "Samsung", img: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400", options: ["Phantom Black", "Grey"], sizes: ["256GB", "512GB"] },
+            { name: "Galaxy S23", price: 450000, cat: "Smartphones", sub: "Samsung", img: "https://images.unsplash.com/photo-1678911820864-e2c567c655d7?w=400", options: ["Preto"], sizes: ["128GB"] },
+            { name: "Galaxy S23 Ultra", price: 650000, cat: "Smartphones", sub: "Samsung", img: "https://images.unsplash.com/photo-1678911820864-e2c567c655d7?w=400", options: ["Preto"], sizes: ["256GB"] },
+            { name: "Galaxy A12", price: 85000, cat: "Smartphones", sub: "Samsung", img: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400", options: ["Preto"], sizes: ["64GB"] },
+            { name: "Galaxy A14", price: 110000, cat: "Smartphones", sub: "Samsung", img: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400", options: ["Preto"], sizes: ["128GB"] },
+            { name: "Galaxy A32", price: 130000, cat: "Smartphones", sub: "Samsung", img: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400", options: ["Preto"], sizes: ["128GB"] },
+            { name: "Galaxy A70", price: 160000, cat: "Smartphones", sub: "Samsung", img: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400", options: ["Preto"], sizes: ["128GB"] },
+            { name: "Galaxy Z Fold 6", price: 1500000, cat: "Smartphones", sub: "Samsung", img: "https://images.unsplash.com/photo-1678911820864-e2c567c655d7?w=400", options: ["Blue", "Silver"], sizes: ["512GB"] },
+   
+            //PERFUMES
+            { name: "Good Girl - C. Herrera", price: 115000, cat: "Perfumes", sub: "Importados", img: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=400", options: ["Padrão"], sizes: ["80ml", "100ml"] },
+            { name: "Perfume Árabe Lattafa", price: 45000, cat: "Perfumes", sub: "Árabes", img: "https://images.unsplash.com/photo-1594035910387-fea47794261f?w=400", options: ["Oud", "Gold"], sizes: ["100ml"] },
+            
+            // VESTUARIO MASCULINO
+            { name: "Fato Safari Luxo", price: 95000, cat: "Moda", sub: "Moda", img: "https://images.unsplash.com/photo-1594932224828-b4b057b99cdd?w=400", options: ["Bege", "Preto", "Azul"], sizes: ["S", "M", "L", "XL", "XXL"] },
+            { name: "Fato Safari (Estilo Africano)", price: 90000, cat: "Moda", sub: "Fato Safari", img: "https://images.unsplash.com/photo-1588850561407-ed78c282e1c7?w=400", options: ["Preto", "Branco"], sizes: ["Ajustável"] },
+            { name: "Fato Desportivo (Treino/Gym)", price: 8500, cat: "Moda", sub: "Fato Social", img: "https://images.unsplash.com/photo-1588850561407-ed78c282e1c7?w=400", options: ["Preto", "Branco"], sizes: ["Ajustável"] },
+            { name: "Fato Social Clássico", price: 35000, cat: "Moda", sub: "Fato Social", img: "https://images.unsplash.com/photo-1594932224828-b4b057b99cdd?w=400", options: ["Preto", "Azul", "Cinza"], sizes: ["S", "M", "L"] },
+            { name: "Calça Jeans", price: 10000, cat: "Moda", sub: "Moda", img: "https://media.istockphoto.com/id/1351999443/photo/white-background-and-jean-trouser.jpg?s=1024x1024&w=is&k=20&c=RIRM-wmPeic03LdbtBiQPwJQZVeedDwac6X_e24iibg=", options: ["Bege", "Preto", "Azul"], sizes: ["S", "M", "L", "XL", "XXL"] },
+    
+            // TÉNIS MASCULINO
+            { name: "Ténis Timberland", price: 20000, cat: "Calçado", sub: "Timberland", img: "https://images.pexels.com/photos/1070360/pexels-photo-1070360.jpeg", options: ["Castanho"], sizes: ["40", "41", "42"] },
+            { name: "Alexander McQueen", price: 19500, cat: "Calçado", sub: "McQueen", img: "https://images.pexels.com/photos/1456706/pexels-photo-1456706.jpeg", options: ["Branco"], sizes: ["40", "41", "42"] },
+            { name: "Ténis da Nike", price: 18000, cat: "Calçado", sub: "Nike", img: "https://images.pexels.com/photos/1456706/pexels-photo-1456706.jpeg", options: ["Preto"], sizes: ["40", "41", "42"] },
+    
+            // T-SHIRTS
+            { name: "T-shirt Barcelona", price: 5000, cat: "Desporto", sub: "Futebol", img: "https://images.pexels.com/photos/14001185/pexels-photo-14001185.jpeg", options: ["Principal"], sizes: ["S", "M", "L"] },
+            { name: "T-shirt Real Madrid", price: 5000, cat: "Desporto", sub: "Futebol", img: "https://images.pexels.com/photos/14001184/pexels-photo-14001184.jpeg", options: ["Branco"], sizes: ["S", "M", "L"] },
+            { name: "T-shirt Espanha", price: 5000, cat: "Desporto", sub: "Futebol", img: "https://images.pexels.com/photos/14001185/pexels-photo-14001185.jpeg", options: ["Vermelho"], sizes: ["S", "M", "L"] },
+            { name: "T-shirt Argentina", price: 5000, cat: "Desporto", sub: "Futebol", img: "https://images.pexels.com/photos/14001185/pexels-photo-14001185.jpeg", options: ["Azul/Branco"], sizes: ["S", "M", "L"] },
+            { name: "T-shirt Angola", price: 5000, cat: "Desporto", sub: "Futebol", img: "https://images.pexels.com/photos/14001185/pexels-photo-14001185.jpeg", options: ["Vermelho/Preto"], sizes: ["S", "M", "L"] },
+            { name: "Chuteira Puma", price: 65000, cat: "Desporto", sub: "Futebol", img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400", options: ["Vermelho", "Amarelo"], sizes: ["39", "40", "41", "42", "43"] },
+            { name: "Chuteira Adidas", price: 65000, cat: "Desporto", sub: "Futebol", img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400", options: ["Vermelho", "Amarelo"], sizes: ["39", "40", "41", "42", "43"] },
+            { name: "Chuteira Nike Mercurial", price: 65000, cat: "Desporto", sub: "Futebol", img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400", options: ["Vermelho", "Amarelo"], sizes: ["39", "40", "41", "42", "43"] },
+
+            // MODA / FEMININO
+            { name: "Jeans Skinny Feminina", price: 12500, cat: "Moda", sub: "Feminino", img: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=400", options: ["Azul"], sizes: ["36", "38", "40"] },
+            { name: "Jeans Mom Style", price: 15000, cat: "Moda", sub: "Feminino", img: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=400", options: ["Azul Claro"], sizes: ["38", "40"] },
+            { name: "Jeans Boyfriend", price: 15500, cat: "Moda", sub: "Feminino", img: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=400", options: ["Azul"], sizes: ["38", "40"] },
+            { name: "Jeans Wide Leg", price: 18000, cat: "Moda", sub: "Feminino", img: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=400", options: ["Azul"], sizes: ["36", "38"] },
+            { name: "Calça Cargo Feminina", price: 14000, cat: "Moda", sub: "Feminino", img: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=400", options: ["Bege"], sizes: ["P", "M", "G"] },
+            { name: "Calça Jogger", price: 9500, cat: "Moda", sub: "Feminino", img: "https://images.unsplash.com/photo-1552664110-ad30f2e4c521?w=400", options: ["Preto"], sizes: ["P", "M"] },
+            { name: "Calça Pantalona Luxo", price: 22000, cat: "Moda", sub: "Feminino", img: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=400", options: ["Preto"], sizes: ["M", "G"] },
+            { name: "Calça Flare", price: 17000, cat: "Moda", sub: "Feminino", img: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=400", options: ["Azul Escuro"], sizes: ["38", "40"] },
+            { name: "Calça de Alfaiataria", price: 25000, cat: "Moda", sub: "Feminino", img: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=400", options: ["Preto"], sizes: ["38", "40"] },
+            { name: "Calça Cigarrete", price: 13000, cat: "Moda", sub: "Feminino", img: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=400", options: ["Preto"], sizes: ["36", "38"] },
+            { name: "Leggings Fit", price: 7500, cat: "Moda", sub: "Feminino", img: "https://images.unsplash.com/photo-1506629082925-5941859949b8?w=400", options: ["Preto"], sizes: ["P", "M", "G"] },
+            { name: "Calça Biker", price: 8500, cat: "Moda", sub: "Feminino", img: "https://images.unsplash.com/photo-1506629082925-5941859949b8?w=400", options: ["Grafite"], sizes: ["P", "M"] },
+            { name: "Calça Moletom", price: 11000, cat: "Moda", sub: "Feminino", img: "https://images.unsplash.com/photo-1552664110-ad30f2e4c521?w=400", options: ["Cinza"], sizes: ["P", "M", "G"] },
+            
+            // FEMININO / FATO
+            { name: "Vestido Cintura Marcada", price: 25000, cat: "Moda Feminina", sub: "Evangélica", img: "https://images.unsplash.com/photo-1572804013307-59c855821758?w=400", options: ["Vermelho", "Azul", "Verde"], sizes: ["P", "M", "G"] },
+            { name: "Saia Midi Tecido Leve", price: 18000, cat: "Moda Feminina", sub: "Evangélica", img: "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400", options: ["Estampado", "Liso"], sizes: ["38", "40", "42"] },
+            { name: "Vestido Comportado Premium", price: 32000, cat: "Moda Feminina", sub: "Evangélica", img: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400", options: ["Vinho", "Preto"], sizes: ["M", "G", "GG"] },
+            { name: "Conjunto Oversized Casual", price: 28500, cat: "Moda Feminina", sub: "Conjuntos", img: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400", options: ["Bege", "Off-white"], sizes: ["Único"] },
+            { name: "Conjunto Blazer + Shorts", price: 45000, cat: "Moda Feminina", sub: "Conjuntos", img: "https://images.unsplash.com/photo-1548272332-6a282f3f4c80?w=400", options: ["Cores Ousadas"], sizes: ["P", "M", "G"] },
+            { name: "Vestido Cetim Brilho", price: 55000, cat: "Moda Feminina", sub: "Gala", img: "https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=400", options: ["Dourado", "Prata"], sizes: ["P", "M"] },
+            { name: "Corte Sofisticado Executivo", price: 62000, cat: "Moda Feminina", sub: "Executiva", img: "https://images.unsplash.com/photo-1485230895905-ec17ba36b5bc?w=400", options: ["Azul Marinho", "Cinza"], sizes: ["38", "40", "42", "44"] }
+             
+            // CATEGORIA: ACESSÓRIOS 
+            { name: "Cinto de Couro Executivo", price: 12000, cat: "Acessórios", sub: "Masculino", img: "https://images.unsplash.com/photo-1524234107056-1c1f48f64ab8?w=400", options: ["Preto", "Castanho"], sizes: ["P", "M", "G"] },
+            { name: "Carteira Slim Anti-Furto", price: 8500, cat: "Acessórios", sub: "Masculino", img: "https://images.unsplash.com/photo-1627123424574-724758594e93?w=400", options: ["Preto", "Café"], sizes: ["Padrão"] },
+            { name: "Bolsa de Ombro Feminina", price: 35000, cat: "Acessórios", sub: "Feminino", img: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400", options: ["Nude", "Preto", "Vinho"], sizes: ["Média"] },
+            { name: "Óculos de Sol Aviador", price: 15000, cat: "Acessórios", sub: "Unissex", img: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400", options: ["Dourado", "Preto"], sizes: ["Único"] },
+            { name: "Mochila para Laptop 15'", price: 28000, cat: "Acessórios", sub: "Tech", img: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400", options: ["Cinza", "Preto"], sizes: ["15 Polegadas"] },
+
+            // CATEGORIA: RELÓGIOS ---
+            { name: "Relógio Rolex Submariner (Réplica)", price: 85000, cat: "Relógios", sub: "Luxo", img: "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=400", options: ["Prata", "Dourado"], sizes: ["Ajustável"] },
+            { name: "Relógio Casio G-Shock", price: 42000, cat: "Relógios", sub: "Desportivo", img: "https://images.unsplash.com/photo-1612817159949-195b6eb9e31a?w=400", options: ["Preto", "Militar"], sizes: ["Resistente à Água"] },
+            { name: "Relógio Feminino Elegance", price: 22000, cat: "Relógios", sub: "Feminino", img: "https://images.unsplash.com/photo-1508685096489-7aac29fbd5b3?w=400", options: ["Rose Gold", "Prata"], sizes: ["Fino"] },
+            { name: "Relógio Inteligente Smartwatch", price: 55000, cat: "Relógios", sub: "Tech", img: "https://images.unsplash.com/photo-1544117518-2985d7583072?w=400", options: ["Preto", "Branco"], sizes: ["iOS/Android"] },
+            { name: "Relógio de Pulso Clássico Couro", price: 18500, cat: "Relógios", sub: "Social", img: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=400", options: ["Castanho", "Preto"], sizes: ["40mm"] }
+
+            // FEMININO / CALÇADO
+            { name: "Scarpin Clássico", price: 28000, cat: "Calçado", sub: "Salto", img: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=400", options: ["Preto"], sizes: ["35", "36", "37"] },
+            { name: "Salto Agulha (Stiletto)", price: 35000, cat: "Calçado", sub: "Salto", img: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=400", options: ["Preto"], sizes: ["36", "37"] },
+            { name: "Salto Bloco", price: 19000, cat: "Calçado", sub: "Salto", img: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=400", options: ["Bege"], sizes: ["35", "36"] },
+            { name: "Salto Anabela", price: 18500, cat: "Calçado", sub: "Salto", img: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=400", options: ["Nude"], sizes: ["36", "37"] },
+            { name: "Plataforma", price: 24000, cat: "Calçado", sub: "Salto", img: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=400", options: ["Branco"], sizes: ["35", "36", "37"] },
+            { name: "Sandálias de Salto", price: 15000, cat: "Calçado", sub: "Salto", img: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=400", options: ["Dourado"], sizes: ["35", "36", "37"] },
+            { name: "Branco Básico Sneaker", price: 12000, cat: "Calçado", sub: "Ténis", img: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400", options: ["Branco"], sizes: ["38", "40", "42"] },
+            { name: "Chunky Sneakers", price: 28000, cat: "Calçado", sub: "Ténis", img: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400", options: ["Multicolor"], sizes: ["36", "37", "38"] },
+            { name: "Slip-on Confort", price: 10000, cat: "Calçado", sub: "Ténis", img: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400", options: ["Preto"], sizes: ["35", "36", "37"] },
+            
+            // FEMININO / DESPORTO
+            { name: "Nike Corrida Air", price: 45000, cat: "Desporto", sub: "Nike", img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400", options: ["Azul"], sizes: ["38", "40", "42"] },
+            { name: "Adidas Treino Boost", price: 48000, cat: "Desporto", sub: "Adidas", img: "https://images.unsplash.com/photo-1587563871167-1ee9c731aefb?w=400", options: ["Branco"], sizes: ["38", "40", "42"] },
+            { name: "Puma Caminhada", price: 32000, cat: "Desporto", sub: "Puma", img: "https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=400", options: ["Preto"], sizes: ["39", "40", "41"] },
+            { name: "New Balance Casual", price: 55000, cat: "Desporto", sub: "New Balance", img: "https://images.unsplash.com/photo-1539185441755-769473a23570?w=400", options: ["Bege"], sizes: ["40", "41", "42"] },
+            
+            // EQUIPAMENTOS
+            // LALIGA
+            { name: "T-shirt Atlético de Madrid", price: 5000, cat: "Desporto", sub: "Espanha", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400", options: ["Listrado"], sizes: ["M", "L"] },
+            { name: "T-shirt Sevilla FC", price: 5000, cat: "Desporto", sub: "Espanha", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400", options: ["Branco"], sizes: ["M", "L"] },
+            
+            // INGLATERRA
+            { name: "T-shirt Manchester United", price: 5000, cat: "Desporto", sub: "Inglaterra", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400", options: ["Vermelho"], sizes: ["S", "M", "L"] },
+            { name: "T-shirt Manchester City", price: 5000, cat: "Desporto", sub: "Inglaterra", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400", options: ["Azul Celeste"], sizes: ["S", "M", "L"] },
+            { name: "T-shirt Liverpool FC", price: 5000, cat: "Desporto", sub: "Inglaterra", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400", options: ["Vermelho"], sizes: ["S", "M", "L"] },
+            { name: "T-shirt Chelsea FC", price: 5000, cat: "Desporto", sub: "Inglaterra", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400", options: ["Azul"], sizes: ["S", "M", "L"] },
+            { name: "T-shirt Arsenal FC", price: 5000, cat: "Desporto", sub: "Inglaterra", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400", options: ["Vermelho"], sizes: ["S", "M", "L"] },
+            
+            // FRANÇA
+            { name: "T-shirt Olympique de Marseille", price: 5000, cat: "Desporto", sub: "França", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400", options: ["Branco"], sizes: ["M", "L"] },
+            { name: "T-shirt Olympique Lyonnais", price: 5000, cat: "Desporto", sub: "França", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400", options: ["Branco"], sizes: ["M", "L"] },
+            { name: "T-shirt AS Monaco", price: 5000, cat: "Desporto", sub: "França", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400", options: ["Branco/Vermelho"], sizes: ["M", "L"] },
+            
+            // PORTUGAL
+            { name: "T-shirt SL Benfica", price: 5000, cat: "Desporto", sub: "Portugal", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400", options: ["Vermelho"], sizes: ["S", "M", "L"] },
+            { name: "T-shirt FC Porto", price: 5000, cat: "Desporto", sub: "Portugal", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400", options: ["Azul/Branco"], sizes: ["S", "M", "L"] },
+            { name: "T-shirt Sporting CP", price: 5000, cat: "Desporto", sub: "Portugal", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400", options: ["Verde/Branco"], sizes: ["S", "M", "L"] },
+            { name: "T-shirt SC Braga", price: 5000, cat: "Desporto", sub: "Portugal", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400", options: ["Vermelho"], sizes: ["S", "M", "L"] },
+            
+            // GIRA BOLA
+            { name: "T-shirt Petro de Luanda", price: 5000, cat: "Desporto", sub: "Angola", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400", options: ["Amarelo/Azul"], sizes: ["M", "L", "XL"] },
+            { name: "T-shirt Primeiro de Agosto", price: 5000, cat: "Desporto", sub: "Angola", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400", options: ["Vermelho/Preto"], sizes: ["M", "L", "XL"] },
+            { name: "T-shirt Interclube", price: 5000, cat: "Desporto", sub: "Angola", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400", options: ["Azul"], sizes: ["M", "L"] },
+            { name: "T-shirt Sagrada Esperança", price: 5000, cat: "Desporto", sub: "Angola", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400", options: ["Verde"], sizes: ["M", "L"] },
+            
+            // HOLANDA
+            { name: "T-shirt Ajax", price: 5000, cat: "Desporto", sub: "Holanda", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400", options: ["Branco/Vermelho"], sizes: ["M", "L"] },
+            { name: "T-shirt PSV Eindhoven", price: 5000, cat: "Desporto", sub: "Holanda", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400", options: ["Listrado"], sizes: ["M", "L"] },
+            { name: "T-shirt Feyenoord", price: 5000, cat: "Desporto", sub: "Holanda", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400", options: ["Branco/Vermelho"], sizes: ["M", "L"] },
+            
+            // ALEMANHA
+            { name: "T-shirt Bayern Munich", price: 5000, cat: "Desporto", sub: "Alemanha", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400", options: ["Vermelho"], sizes: ["S", "M", "L"] },
+            { name: "T-shirt Borussia Dortmund", price: 5000, cat: "Desporto", sub: "Alemanha", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400", options: ["Amarelo"], sizes: ["S", "M", "L"] },
+            { name: "T-shirt RB Leipzig", price: 5000, cat: "Desporto", sub: "Alemanha", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400", options: ["Branco"], sizes: ["S", "M", "L"] },
+            
+            // ITÁLIA 
+            { name: "T-shirt Juventus", price: 5000, cat: "Desporto", sub: "Itália", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400", options: ["Branco/Preto"], sizes: ["S", "M", "L"] },
+            { name: "T-shirt AC Milan", price: 5000, cat: "Desporto", sub: "Itália", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400", options: ["Vermelho/Preto"], sizes: ["S", "M", "L"] },
+            { name: "T-shirt Inter Milan", price: 5000, cat: "Desporto", sub: "Itália", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400", options: ["Azul/Preto"], sizes: ["S", "M", "L"] },
+            { name: "T-shirt Napoli", price: 5000, cat: "Desporto", sub: "Itália", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400", options: ["Azul"], sizes: ["S", "M", "L"] }
         ];
 
-        let products = JSON.parse(localStorage.getItem('frm_db')) || initialProducts;
-        let cart = JSON.parse(localStorage.getItem('frm_cart')) || [];
-        let history = JSON.parse(localStorage.getItem('frm_history')) || [];
-        let currentUser = localStorage.getItem('frm_user') || "";
+        let cart = [];
+        let activeMainCat = "Todos";
+        let activeSubCat = "Todos";
 
         // --- INICIALIZAÇÃO ---
         window.onload = () => {
-            if(currentUser) {
-                document.getElementById('auth-overlay').style.transform = 'translateY(-100%)';
-                document.getElementById('user-greeting').innerText = `Olá, ${currentUser}`;
-            }
+            renderNav();
             renderProducts();
-            renderCategories();
-            updateCartUI();
         };
 
-        // --- AUTH ---
-        function login() {
-            const name = document.getElementById('user-name-input').value;
-            if(!name) return alert("Por favor, diga-nos seu nome.");
-            currentUser = name;
-            localStorage.setItem('frm_user', name);
-            document.getElementById('auth-overlay').style.transform = 'translateY(-100%)';
-            document.getElementById('user-greeting').innerText = `Olá, ${currentUser}`;
-        }
+        function renderNav() {
+            const mains = ["Todos", ...new Set(db.map(p => p.cat))];
+            document.getElementById('main-cats').innerHTML = mains.map(m => `
+                <button class="btn-cat ${m === activeMainCat ? 'active' : ''}" onclick="setMainCat('${m}')">${m}</button>
+            `).join('');
 
-        // --- NAVEGAÇÃO & FILTROS ---
-        function renderCategories() {
-            const cats = ['todos', ...new Set(products.map(p => p.cat))];
-            const list = document.getElementById('cat-list');
-            list.innerHTML = cats.map(c => `
-                <button class="cat-tag ${c === 'todos' ? 'active' : ''}" onclick="filterProducts('${c}', this)">
-                    ${c}
-                </button>
+            const subs = ["Todos", ...new Set(db.filter(p => activeMainCat === "Todos" || p.cat === activeMainCat).map(p => p.sub))];
+            document.getElementById('sub-cats').innerHTML = subs.map(s => `
+                <button class="btn-cat btn-sub ${s === activeSubCat ? 'active' : ''}" onclick="setSubCat('${s}')">${s}</button>
             `).join('');
         }
 
-        function filterProducts(cat, btn) {
-            if(btn) {
-                document.querySelectorAll('.cat-tag').forEach(t => t.classList.remove('active'));
-                btn.classList.add('active');
-            }
-            const filtered = cat === 'todos' ? products : products.filter(p => p.cat === cat);
-            renderProducts(filtered);
-        }
+        function setMainCat(c) { activeMainCat = c; activeSubCat = "Todos"; renderNav(); renderProducts(); }
+        function setSubCat(s) { activeSubCat = s; renderNav(); renderProducts(); }
 
-        // --- VITRINE ---
-        function renderProducts(data = products) {
-            const vitrine = document.getElementById('main-vitrine');
-            vitrine.innerHTML = data.map(p => `
+        function renderProducts() {
+            const filtered = db.filter(p => {
+                return (activeMainCat === "Todos" || p.cat === activeMainCat) && (activeSubCat === "Todos" || p.sub === activeSubCat);
+            });
+
+            document.getElementById('product-display').innerHTML = filtered.map((p, i) => `
                 <div class="card">
-                    <div class="card-img-box">
-                        <img src="${p.img}" class="card-img" alt="${p.name}">
-                    </div>
-                    <div class="card-content">
-                        <div class="card-title">${p.name}</div>
-                        <div class="card-price">${p.price.toLocaleString()} Kz</div>
-                        <div class="variations">
-                            ${getVariationHTML(p.cat)}
+                    <img src="${p.img}" class="card-img">
+                    <div class="card-body">
+                        <span class="card-brand">${p.sub}</span>
+                        <h3 class="card-title">${p.name}</h3>
+                        <div class="attr-box">
+                            <select id="color-${i}" class="attr-select">
+                                ${p.options.map(o => `<option value="${o}">${o}</option>`).join('')}
+                            </select>
+                            <select id="size-${i}" class="attr-select">
+                                ${p.sizes.map(s => `<option value="${s}">${s}</option>`).join('')}
+                            </select>
                         </div>
-                        <button class="btn btn-gold" style="width: 100%;" onclick="addToCart(${p.id})">ADICIONAR</button>
+                        <div class="price">${p.price.toLocaleString()} Kz</div>
+                        <button class="btn-buy" onclick="addToCart(${db.indexOf(p)}, ${i})">ADICIONAR</button>
                     </div>
                 </div>
             `).join('');
         }
 
-        function getVariationHTML(cat) {
-            if(cat === 'Calçados') return `<select class="variation-select"><option>Tam: 40</option><option>Tam: 42</option></select><select class="variation-select"><option>Branco</option><option>Preto</option></select>`;
-            if(cat === 'Moda') return `<select class="variation-select"><option>Tam: M</option><option>Tam: L</option></select><select class="variation-select"><option>Preto</option><option>Slim</option></select>`;
-            return `<select class="variation-select" style="grid-column: span 2;"><option>Padrão Original</option><option>Premium Plus</option></select>`;
+        // --- LÓGICA DO CARRINHO ---
+        function addToCart(dbIndex, viewId) {
+            const product = db[dbIndex];
+            const color = document.getElementById(`color-${viewId}`).value;
+            const size = document.getElementById(`size-${viewId}`).value;
+            
+            cart.push({ ...product, selectedColor: color, selectedSize: size });
+            updateCartBadge();
+            alert(`${product.name} adicionado!`);
         }
 
-        // --- CARRINHO ---
-        function togglePanel(id) {
-            document.getElementById(id).classList.toggle('panel-open');
+        function updateCartBadge() {
+            document.getElementById('cart-badge').innerText = cart.length;
         }
 
-        function addToCart(id) {
-            const item = products.find(p => p.id === id);
-            cart.push({...item, cartId: Date.now()});
-            saveCart();
-            updateCartUI();
-            togglePanel('cart-panel');
-        }
-
-        function updateCartUI() {
+        function openCart() {
+            document.getElementById('cart-panel').style.display = 'block';
             const list = document.getElementById('cart-items');
-            const badge = document.getElementById('cart-badge');
-            const totalDisplay = document.getElementById('cart-total');
-            
-            badge.innerText = cart.length;
-            let total = 0;
-            
-            list.innerHTML = cart.map((item, index) => {
-                total += item.price;
-                return `
-                    <div class="cart-item">
-                        <div>
-                            <strong>${item.name}</strong><br>
-                            <small>${item.price.toLocaleString()} Kz</small>
-                        </div>
-                        <button onclick="removeFromCart(${index})" style="color: var(--danger); background: none; border: none; cursor:pointer;">Remover</button>
-                    </div>
-                `;
-            }).join('');
-            
-            totalDisplay.innerText = total.toLocaleString() + " Kz";
-        }
-
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            saveCart();
-            updateCartUI();
-        }
-
-        function saveCart() { localStorage.setItem('frm_cart', JSON.stringify(cart)); }
-
-        function checkout() {
-            if(cart.length === 0) return alert("Carrinho vazio!");
+            list.innerHTML = cart.map((item, idx) => `
+                <div style="display:flex; justify-content:space-between; margin:10px 0; font-size:0.8rem;">
+                    <span>${item.name} (${item.selectedColor} - ${item.selectedSize})</span>
+                    <span>${item.price.toLocaleString()} Kz</span>
+                </div>
+            `).join('');
             
             const total = cart.reduce((s, i) => s + i.price, 0);
-            const date = new Date().toLocaleString();
-            
-            const order = { user: currentUser, date, total, items: cart.length };
-            history.unshift(order);
-            localStorage.setItem('frm_history', JSON.stringify(history));
-            
-            let text = `*NOVO PEDIDO - FRM BOUTIQUE*%0A*Cliente:* ${currentUser}%0A%0A*Itens:*%0A`;
-            cart.forEach(i => text += `- ${i.name} (${i.price.toLocaleString()} Kz)%0A`);
-            text += `%0A*TOTAL:* ${total.toLocaleString()} Kz`;
-            
-            window.open(`https://wa.me/244941044772?text=${text}`);
-            cart = [];
-            saveCart();
-            updateCartUI();
-            togglePanel('cart-panel');
-            renderHistory();
+            document.getElementById('cart-total').innerText = total.toLocaleString() + " Kz";
         }
 
-        // --- HISTÓRICO ---
-        function renderHistory() {
-            const list = document.getElementById('history-items');
-            list.innerHTML = history.map(h => `
-                <div style="background: var(--glass); padding: 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid var(--border);">
-                    <small style="color: var(--accent);">${h.date}</small><br>
-                    <strong>Total: ${h.total.toLocaleString()} Kz</strong><br>
-                    <small>${h.items} produtos comprados</small>
-                </div>
-            `).join('');
+        function checkout() {
+            const addr = document.getElementById('cust-address').value;
+            const name = document.getElementById('cust-name').value;
+            if(!addr || !name || cart.length === 0) return alert("Preencha os dados e adicione itens!");
+
+            let msg = `*PEDIDO FRM BOUTIQUE*%0A*Cliente:* ${name}%0A*Endereço:* ${addr}%0A%0A*Itens:*%0A`;
+            cart.forEach(i => msg += `- ${i.name} [${i.selectedColor}/${i.selectedSize}]%0A`);
+            msg += `%0A*TOTAL:* ${cart.reduce((s, i) => s + i.price, 0).toLocaleString()} Kz`;
+
+            window.open(`https://wa.me/244941044772?text=${msg}`);
+            cart = []; updateCartBadge(); closePanels();
         }
-        renderHistory();
 
         // --- ADMIN ---
-        function enterAdmin() {
-            const p = prompt("Senha Administrativa:");
-            if(p === "felesema9") toggleAdmin();
-            else alert("Acesso negado.");
+        function openAdmin() {
+            const pass = prompt("Senha Administrativa:");
+            if(pass === "felesema9") document.getElementById('admin-panel').style.display = 'block';
         }
 
-        function toggleAdmin() {
-            const p = document.getElementById('admin-panel');
-            p.style.display = p.style.display === 'block' ? 'none' : 'block';
-            if(p.style.display === 'block') renderAdminList();
-        }
-
-        function addProduct() {
+        function saveNewProduct() {
             const n = document.getElementById('adm-name').value;
-            const p = document.getElementById('adm-price').value;
-            const i = document.getElementById('adm-img').value;
-            const c = document.getElementById('adm-cat').value;
+            const p = parseInt(document.getElementById('adm-price').value);
+            const im = document.getElementById('adm-img').value;
+            const c = document.getElementById('adm-cat-main').value;
+            const s = document.getElementById('adm-sub').value;
 
-            if(!n || !p || !i) return alert("Preencha todos os campos!");
+            if(!n || !p) return alert("Erro nos campos!");
 
-            products.push({ id: Date.now(), name: n, price: parseInt(p), img: i, cat: c });
-            saveDB();
+            db.push({
+                name: n, price: p, cat: c, sub: s, img: im || "https://via.placeholder.com/400",
+                options: ["Padrão"], sizes: ["Único"]
+            });
+
+            localStorage.setItem('frm_master_db', JSON.stringify(db));
+            alert("Produto Salvo!");
             renderProducts();
-            renderCategories();
-            renderAdminList();
-            alert("Produto Adicionado!");
+            closePanels();
         }
 
-        function renderAdminList() {
-            const list = document.getElementById('admin-list');
-            list.innerHTML = products.map((p, idx) => `
-                <div style="display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #333;">
-                    <span>${p.name}</span>
-                    <button onclick="deleteProduct(${idx})" style="color: red; border: none; background: none; cursor: pointer;">Excluir</button>
-                </div>
-            `).join('');
+        function closePanels() {
+            document.querySelectorAll('.panel').forEach(p => p.style.display = 'none');
         }
-
-        function deleteProduct(idx) {
-            if(confirm("Deseja excluir este produto?")) {
-                products.splice(idx, 1);
-                saveDB();
-                renderProducts();
-                renderCategories();
-                renderAdminList();
-            }
-        }
-
-        function saveDB() { localStorage.setItem('frm_db', JSON.stringify(products)); }
     </script>
 </body>
 </html>
