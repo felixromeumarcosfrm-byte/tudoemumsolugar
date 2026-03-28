@@ -167,7 +167,7 @@
 
         .btn-buy:hover { background: #fff; transform: scale(1.02); }
 
-        /* --- CARRINHO --- */
+        /* --- ÍCONES FLUTUANTES --- */
         .cart-icon {
             position: fixed;
             bottom: 30px;
@@ -199,7 +199,29 @@
             font-weight: 800;
         }
 
-        /* --- PAINÉIS --- */
+        .user-icon {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            background: var(--secondary);
+            color: var(--accent);
+            width: 65px;
+            height: 65px;
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border);
+            z-index: 2000;
+            transition: 0.3s;
+        }
+
+        .user-icon:hover { border-color: var(--accent); transform: scale(1.05); }
+
+        /* --- PAINÉIS & OVERLAYS --- */
         .panel {
             display: none;
             position: fixed;
@@ -229,6 +251,20 @@
             z-index: 2500;
         }
 
+        .auth-overlay {
+            display: flex; /* Começa visível para bloquear tudo */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary); /* Fundo sólido para esconder a loja */
+            z-index: 4000; /* Acima de TUDO */
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
         .form-control {
             width: 100%;
             padding: 12px;
@@ -241,6 +277,21 @@
     </style>
 </head>
 <body>
+
+    <!-- TELA DE LOGIN / CADASTRO (BLOQUEIO INICIAL) -->
+    <div id="auth-screen" class="auth-overlay">
+        <div style="background: var(--secondary); padding: 40px; border-radius: 24px; border: 1px solid var(--accent); width: 90%; max-width: 400px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.8);">
+            <h2 style="color: var(--accent); margin-bottom: 10px; font-weight: 800; font-size: 1.8rem;">FRM BOUTIQUE</h2>
+            <p style="color: var(--text-dim); margin-bottom: 25px; font-size: 0.9rem;">Identifique-se ou crie sua conta para acessar nosso catálogo exclusivo.</p>
+            
+            <input type="text" id="auth-name" class="form-control" placeholder="Seu Nome Completo">
+            
+            <div style="text-align: left; margin-bottom: 5px; color: var(--text-dim); font-size: 0.8rem; padding-left: 5px;">Data de Nascimento:</div>
+            <input type="date" id="auth-dob" class="form-control" style="color-scheme: dark;">
+            
+            <button class="btn-buy" style="margin-top: 10px;" onclick="loginUser()">ACESSAR LOJA</button>
+        </div>
+    </div>
 
     <header ondblclick="openAdmin()" title="Duplo clique para abrir o painel Administrativo">
         <div class="logo">FRM BOUTIQUE</div>
@@ -258,12 +309,19 @@
         <div id="product-display" class="grid"></div>
     </main>
 
+    <!-- Ícone de Perfil / Histórico -->
+    <div class="user-icon" onclick="openHistory()" title="Meu Perfil / Histórico">
+        👤
+    </div>
+
+    <!-- Ícone de Carrinho -->
     <div class="cart-icon" onclick="openCart()">
         🛒 <span id="cart-badge" class="cart-badge">0</span>
     </div>
 
     <div id="overlay" class="overlay" onclick="closePanels()"></div>
 
+    <!-- PAINEL CARRINHO -->
     <div id="cart-panel" class="panel">
         <h2 style="color: var(--accent); margin-bottom: 20px;">Seu Pedido</h2>
         <div id="cart-items"></div>
@@ -271,13 +329,23 @@
             <div style="display:flex; justify-content:space-between; font-size: 1.3rem; font-weight: 800; margin-bottom: 20px;">
                 <span>Total:</span> <span id="cart-total">0 Kz</span>
             </div>
-            <input type="text" id="cust-name" class="form-control" placeholder="Seu Nome Completo">
+            <input type="text" id="cust-name" class="form-control" placeholder="Seu Nome Completo" disabled style="opacity: 0.7;">
             <input type="text" id="cust-address" class="form-control" placeholder="Endereço (Bairro/Rua)">
             <button class="btn-buy" onclick="checkout()">PEDIR VIA WHATSAPP</button>
         </div>
     </div>
 
-    <!-- PAINEL ADMIN ADICIONADO AQUI -->
+    <!-- PAINEL DE HISTÓRICO DE COMPRAS -->
+    <div id="history-panel" class="panel">
+        <h2 style="color: var(--accent); margin-bottom: 20px;">Seu Histórico</h2>
+        <div id="history-items" style="max-height: 50vh; overflow-y: auto; padding-right: 10px;"></div>
+        <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); display: flex; gap: 10px;">
+            <button class="btn-buy" onclick="closePanels()" style="background: transparent; border: 1px solid var(--accent); color: var(--accent);">VOLTAR</button>
+            <button class="btn-buy" onclick="logoutUser()" style="background: #ff3b3b; color: white;">SAIR DA CONTA</button>
+        </div>
+    </div>
+
+    <!-- PAINEL ADMIN -->
     <div id="admin-panel" class="panel">
         <h2 style="color: var(--accent); margin-bottom: 20px;">Cadastrar Produto</h2>
         <input type="text" id="adm-name" class="form-control" placeholder="Nome do Produto">
@@ -294,35 +362,35 @@
             { name: "iPhone 7", price: 70000, cat: "Smartphones", sub: "Apple", img: "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=400&q=75&fm=webp", options: ["Preto", "Prata", "Rose"], sizes:["32GB", "128GB"] },
             { name: "iPhone 7 Plus", price: 78000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/7068406/pexels-photo-7068406.jpeg?auto=compress&w=400", options: ["Preto", "Prata", "Rose"], sizes:["32GB", "128GB"] },
             { name: "iPhone 8", price: 120000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/3934704/pexels-photo-3934704.jpeg?auto=compress&w=400", options:["Preto", "Prata", "Rose"], sizes: ["32GB", "128GB"] },
-            { name: "iPhone 8 Plus", price: 140000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/3934704/pexels-photo-3934704.jpeg?auto=compress&w=400", options: ["Preto", "Prata", "Rose"], sizes:["32GB", "128GB"] },
-            { name: "iPhone X", price: 220000, cat: "Smartphones", sub: "Apple", img: "https://images.unsplash.com/photo-1519923041107-e4dc8d9193da?w=400&q=75&fm=webp", options: ["Space Grey", "Silver"], sizes: ["64GB", "256GB"] },
+            { name: "iPhone 8 Plus", price: 140000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/3934704/pexels-photo-3934704.jpeg?auto=compress&w=400", options:["Preto", "Prata", "Rose"], sizes:["32GB", "128GB"] },
+            { name: "iPhone X", price: 220000, cat: "Smartphones", sub: "Apple", img: "https://images.unsplash.com/photo-1519923041107-e4dc8d9193da?w=400&q=75&fm=webp", options: ["Space Grey", "Silver"], sizes:["64GB", "256GB"] },
             { name: "iPhone XR", price: 250000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/3036882/pexels-photo-3036882.jpeg?auto=compress&w=400", options:["Preto", "Prata", "Rose"], sizes: ["32GB", "128GB"] },
             { name: "iPhone XS", price: 270000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/3651803/pexels-photo-3651803.jpeg?auto=compress&w=400", options:["Preto", "Prata", "Rose"], sizes: ["32GB", "128GB"] },
             { name: "iPhone 11", price: 310000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/4645502/pexels-photo-4645502.jpeg?auto=compress&w=400", options: ["Preto", "Prata", "Rose"], sizes:["32GB", "128GB"] },
-            { name: "iPhone 11 Pro", price: 340000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/4645502/pexels-photo-4645502.jpeg?auto=compress&w=400", options:["Preto", "Prata", "Rose"], sizes: ["64GB", "128GB"] },
-            { name: "iPhone 11 Pro Max", price: 380000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/6751554/pexels-photo-6751554.jpeg?auto=compress&w=400", options: ["Preto", "Prata", "Rose"], sizes:["64GB", "128GB"] },
+            { name: "iPhone 11 Pro", price: 340000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/4645502/pexels-photo-4645502.jpeg?auto=compress&w=400", options:["Preto", "Prata", "Rose"], sizes:["64GB", "128GB"] },
+            { name: "iPhone 11 Pro Max", price: 380000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/6751554/pexels-photo-6751554.jpeg?auto=compress&w=400", options:["Preto", "Prata", "Rose"], sizes:["64GB", "128GB"] },
             { name: "iPhone 12", price: 410000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/5750001/pexels-photo-5750001.jpeg?auto=compress&w=400", options: ["Preto", "Prata", "Rose"], sizes:["64GB", "128GB"] },
-            { name: "iPhone 12 Pro", price: 450000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/6608247/pexels-photo-6608247.jpeg?auto=compress&w=400", options:["Preto", "Prata", "Rose"], sizes: ["64GB", "128GB"] },
-            { name: "iPhone 12 Pro Max", price: 490000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/6751555/pexels-photo-6751555.jpeg?auto=compress&w=400", options: ["Preto", "Prata", "Rose"], sizes:["64GB", "128GB"] },
-            { name: "iPhone 13", price: 520000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/18403788/pexels-photo-18403788.jpeg?auto=compress&w=400", options:["Preto", "Prata", "Rose"], sizes: ["64GB", "128GB"] },
-            { name: "iPhone 13 Pro", price: 540000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/18403793/pexels-photo-18403793.jpeg?auto=compress&w=400", options: ["Preto", "Prata", "Rose"], sizes:["32GB", "128GB"] },
-            { name: "iPhone 13 Pro Max", price: 560000, cat: "Smartphones", sub: "Apple", img: "https://images.unsplash.com/photo-1632661674596-df8be070a5c5?w=400&q=75&fm=webp", options:["Sierra Blue", "Graphite"], sizes: ["128GB", "256GB", "512GB"] },
-            { name: "iPhone 14", price: 595000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/18403793/pexels-photo-18403793.jpeg?auto=compress&w=400", options: ["Preto", "Prata", "Rose"], sizes:["128GB", "256GB", "512GB"] },
-            { name: "iPhone 14 Pro", price: 620000, cat: "Smartphones", sub: "Apple", img: "https://pixabay.com/images/download/x-7479303_1920.jpg", options: ["Preto", "Prata", "Rose"], sizes: ["128GB", "256GB", "512GB"] },
-            { name: "iPhone 14 Pro Max", price: 650000, cat: "Smartphones", sub: "Apple", img: "https://pixabay.com/images/download/x-6884672_1920.jpg", options:["Preto", "Prata", "Rose"], sizes: ["128GB", "256GB", "512GB"] },
-            { name: "iPhone 15", price: 750000, cat: "Smartphones", sub: "Apple", img: "https://pixabay.com/images/download/x-7479302_1920.jpg", options:["Preto", "Prata", "Rose"], sizes: ["128GB", "256GB", "512GB"] },
-            { name: "iPhone 16", price: 850000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/7745561/pexels-photo-7745561.jpeg?auto=compress&w=400", options: ["Preto", "Prata", "Rose"], sizes:["256GB", "512GB"] },
+            { name: "iPhone 12 Pro", price: 450000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/6608247/pexels-photo-6608247.jpeg?auto=compress&w=400", options:["Preto", "Prata", "Rose"], sizes:["64GB", "128GB"] },
+            { name: "iPhone 12 Pro Max", price: 490000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/6751555/pexels-photo-6751555.jpeg?auto=compress&w=400", options:["Preto", "Prata", "Rose"], sizes:["64GB", "128GB"] },
+            { name: "iPhone 13", price: 520000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/18403788/pexels-photo-18403788.jpeg?auto=compress&w=400", options:["Preto", "Prata", "Rose"], sizes:["64GB", "128GB"] },
+            { name: "iPhone 13 Pro", price: 540000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/18403793/pexels-photo-18403793.jpeg?auto=compress&w=400", options:["Preto", "Prata", "Rose"], sizes:["32GB", "128GB"] },
+            { name: "iPhone 13 Pro Max", price: 560000, cat: "Smartphones", sub: "Apple", img: "https://images.unsplash.com/photo-1632661674596-df8be070a5c5?w=400&q=75&fm=webp", options:["Sierra Blue", "Graphite"], sizes:["128GB", "256GB", "512GB"] },
+            { name: "iPhone 14", price: 595000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/18403793/pexels-photo-18403793.jpeg?auto=compress&w=400", options:["Preto", "Prata", "Rose"], sizes:["128GB", "256GB", "512GB"] },
+            { name: "iPhone 14 Pro", price: 620000, cat: "Smartphones", sub: "Apple", img: "https://pixabay.com/images/download/x-7479303_1920.jpg", options:["Preto", "Prata", "Rose"], sizes:["128GB", "256GB", "512GB"] },
+            { name: "iPhone 14 Pro Max", price: 650000, cat: "Smartphones", sub: "Apple", img: "https://pixabay.com/images/download/x-6884672_1920.jpg", options:["Preto", "Prata", "Rose"], sizes:["128GB", "256GB", "512GB"] },
+            { name: "iPhone 15", price: 750000, cat: "Smartphones", sub: "Apple", img: "https://pixabay.com/images/download/x-7479302_1920.jpg", options:["Preto", "Prata", "Rose"], sizes:["128GB", "256GB", "512GB"] },
+            { name: "iPhone 16", price: 850000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/7745561/pexels-photo-7745561.jpeg?auto=compress&w=400", options:["Preto", "Prata", "Rose"], sizes:["256GB", "512GB"] },
             { name: "iPhone 16 Pro Max", price: 890000, cat: "Smartphones", sub: "Apple", img: "https://images.unsplash.com/photo-1727103554116-3e042797e871?w=400&q=75&fm=webp", options: ["Titanium", "Black"], sizes:["256GB", "512GB", "1TB"] },
     
             // --- SAMSUNG ---
-            { name: "iPhone 17", price: 1200000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/34624327/pexels-photo-34624327.jpeg?auto=compress&w=400", options: ["Preto", "Prata", "Laranja"], sizes: ["512GB", "1TB"] },
+            { name: "iPhone 17", price: 1200000, cat: "Smartphones", sub: "Apple", img: "https://images.pexels.com/photos/34624327/pexels-photo-34624327.jpeg?auto=compress&w=400", options: ["Preto", "Prata", "Laranja"], sizes:["512GB", "1TB"] },
             { name: "Galaxy S25 Ultra", price: 1350000, cat: "Smartphones", sub: "Samsung", img: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400&q=75&fm=webp", options:["Phantom Black", "Grey"], sizes: ["256GB", "512GB"] },
-            { name: "Galaxy S23", price: 450000, cat: "Smartphones", sub: "Samsung", img: "https://images.unsplash.com/photo-1678911820864-e2c567c655d7?w=400&q=75&fm=webp", options: ["Preto"], sizes: ["128GB"] },
-            { name: "Galaxy S23 Ultra", price: 650000, cat: "Smartphones", sub: "Samsung", img: "https://images.unsplash.com/photo-1678911820864-e2c567c655d7?w=400&q=75&fm=webp", options: ["Preto"], sizes:["256GB"] },
+            { name: "Galaxy S23", price: 450000, cat: "Smartphones", sub: "Samsung", img: "https://images.unsplash.com/photo-1678911820864-e2c567c655d7?w=400&q=75&fm=webp", options: ["Preto"], sizes:["128GB"] },
+            { name: "Galaxy S23 Ultra", price: 650000, cat: "Smartphones", sub: "Samsung", img: "https://images.unsplash.com/photo-1678911820864-e2c567c655d7?w=400&q=75&fm=webp", options:["Preto"], sizes:["256GB"] },
             { name: "Galaxy A12", price: 85000, cat: "Smartphones", sub: "Samsung", img: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400&q=75&fm=webp", options:["Preto"], sizes: ["64GB"] },
             { name: "Galaxy A14", price: 110000, cat: "Smartphones", sub: "Samsung", img: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400&q=75&fm=webp", options: ["Preto"], sizes: ["128GB"] },
             { name: "Galaxy A32", price: 130000, cat: "Smartphones", sub: "Samsung", img: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400&q=75&fm=webp", options: ["Preto"], sizes: ["128GB"] },
-            { name: "Galaxy A70", price: 160000, cat: "Smartphones", sub: "Samsung", img: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400&q=75&fm=webp", options: ["Preto"], sizes: ["128GB"] },
+            { name: "Galaxy A70", price: 160000, cat: "Smartphones", sub: "Samsung", img: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400&q=75&fm=webp", options: ["Preto"], sizes:["128GB"] },
             { name: "Galaxy Z Fold 6", price: 1500000, cat: "Smartphones", sub: "Samsung", img: "https://images.unsplash.com/photo-1678911820864-e2c567c655d7?w=400&q=75&fm=webp", options:["Blue", "Silver"], sizes: ["512GB"] },
    
             // --- PERFUMES ---
@@ -337,49 +405,47 @@
             { name: "Fato Safari (Estilo Africano)", price: 90000, cat: "Moda", sub: "Fato Safari", img: "https://images.unsplash.com/photo-1588850561407-ed78c282e1c7?w=400&q=75&fm=webp", options: ["Preto", "Branco"], sizes: ["Ajustável"] },
             { name: "Fato Desportivo (Treino/Gym)", price: 8500, cat: "Moda", sub: "Fato Social", img: "https://images.unsplash.com/photo-1588850561407-ed78c282e1c7?w=400&q=75&fm=webp", options:["Preto", "Branco"], sizes: ["Ajustável"] },
             { name: "Fato Social Clássico", price: 35000, cat: "Moda", sub: "Fato Social", img: "https://images.unsplash.com/photo-1594932224828-b4b057b99cdd?w=400&q=75&fm=webp", options: ["Preto", "Azul", "Cinza"], sizes:["S", "M", "L"] },
-            { name: "Calça Jeans", price: 10000, cat: "Moda", sub: "Moda", img: "https://media.istockphoto.com/id/1351999443/photo/white-background-and-jean-trouser.jpg?s=1024x1024&w=is&k=20&c=RIRM-wmPeic03LdbtBiQPwJQZVeedDwac6X_e24iibg=", options:["Bege", "Preto", "Azul"], sizes: ["S", "M", "L", "XL", "XXL"] },
+            { name: "Calça Jeans", price: 10000, cat: "Moda", sub: "Moda", img: "https://media.istockphoto.com/id/1351999443/photo/white-background-and-jean-trouser.jpg?s=1024x1024&w=is&k=20&c=RIRM-wmPeic03LdbtBiQPwJQZVeedDwac6X_e24iibg=", options:["Bege", "Preto", "Azul"], sizes:["S", "M", "L", "XL", "XXL"] },
     
             // --- TÉNIS / MASCULINO ---
-            { name: "Ténis Timberland", price: 20000, cat: "Calçado", sub: "Timberland", img: "https://images.pexels.com/photos/1070360/pexels-photo-1070360.jpeg?auto=compress&w=400", options: ["Castanho"], sizes: ["40", "41", "42"] },
-            { name: "Alexander McQueen", price: 19500, cat: "Calçado", sub: "McQueen", img: "https://images.pexels.com/photos/1456706/pexels-photo-1456706.jpeg?auto=compress&w=400", options: ["Branco"], sizes: ["40", "41", "42"] },
-            { name: "Ténis da Nike", price: 18000, cat: "Calçado", sub: "Nike", img: "https://images.pexels.com/photos/1456706/pexels-photo-1456706.jpeg?auto=compress&w=400", options:["Preto"], sizes: ["40", "41", "42"] },
+            { name: "Ténis Timberland", price: 20000, cat: "Calçado", sub: "Timberland", img: "https://images.pexels.com/photos/1070360/pexels-photo-1070360.jpeg?auto=compress&w=400", options: ["Castanho"], sizes:["40", "41", "42"] },
+            { name: "Alexander McQueen", price: 19500, cat: "Calçado", sub: "McQueen", img: "https://images.pexels.com/photos/1456706/pexels-photo-1456706.jpeg?auto=compress&w=400", options: ["Branco"], sizes:["40", "41", "42"] },
+            { name: "Ténis da Nike", price: 18000, cat: "Calçado", sub: "Nike", img: "https://images.pexels.com/photos/1456706/pexels-photo-1456706.jpeg?auto=compress&w=400", options:["Preto"], sizes:["40", "41", "42"] },
     
             // --- T-SHIRTS ---
-            { name: "T-shirt Barcelona", price: 5000, cat: "Desporto", sub: "Futebol", img: "https://images.pexels.com/photos/14001185/pexels-photo-14001185.jpeg?auto=compress&w=400", options: ["Principal"], sizes:["S", "M", "L"] },
-            { name: "T-shirt Real Madrid", price: 5000, cat: "Desporto", sub: "Futebol", img: "https://images.pexels.com/photos/14001184/pexels-photo-14001184.jpeg?auto=compress&w=400", options: ["Branco"], sizes:["S", "M", "L"] },
             { name: "T-shirt Espanha", price: 5000, cat: "Desporto", sub: "Futebol", img: "https://images.pexels.com/photos/14001185/pexels-photo-14001185.jpeg?auto=compress&w=400", options: ["Vermelho"], sizes:["S", "M", "L"] },
             { name: "T-shirt Argentina", price: 5000, cat: "Desporto", sub: "Futebol", img: "https://images.pexels.com/photos/14001185/pexels-photo-14001185.jpeg?auto=compress&w=400", options: ["Azul/Branco"], sizes:["S", "M", "L"] },
-            { name: "T-shirt Angola", price: 5000, cat: "Desporto", sub: "Futebol", img: "https://images.pexels.com/photos/14001185/pexels-photo-14001185.jpeg?auto=compress&w=400", options: ["Vermelho/Preto"], sizes: ["S", "M", "L"] },
+            { name: "T-shirt Angola", price: 5000, cat: "Desporto", sub: "Futebol", img: "https://images.pexels.com/photos/14001185/pexels-photo-14001185.jpeg?auto=compress&w=400", options: ["Vermelho/Preto"], sizes:["S", "M", "L"] },
             { name: "Chuteira Puma", price: 65000, cat: "Desporto", sub: "Futebol", img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=75&fm=webp", options:["Vermelho", "Amarelo"], sizes:["39", "40", "41", "42", "43"] },
             { name: "Chuteira Adidas", price: 65000, cat: "Desporto", sub: "Futebol", img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=75&fm=webp", options:["Vermelho", "Amarelo"], sizes:["39", "40", "41", "42", "43"] },
-            { name: "Chuteira Nike Mercurial", price: 65000, cat: "Desporto", sub: "Futebol", img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=75&fm=webp", options:["Vermelho", "Amarelo"], sizes: ["39", "40", "41", "42", "43"] },
+            { name: "Chuteira Nike Mercurial", price: 65000, cat: "Desporto", sub: "Futebol", img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=75&fm=webp", options:["Vermelho", "Amarelo"], sizes:["39", "40", "41", "42", "43"] },
 
             // --- MODA / FEMININO ---
             { name: "Jeans Skinny Feminina", price: 12500, cat: "Moda", sub: "Feminino", img: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=400&q=75&fm=webp", options: ["Azul"], sizes:["36", "38", "40"] },
             { name: "Jeans Mom Style", price: 15000, cat: "Moda", sub: "Feminino", img: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=400&q=75&fm=webp", options: ["Azul Claro"], sizes: ["38", "40"] },
-            { name: "Jeans Boyfriend", price: 15500, cat: "Moda", sub: "Feminino", img: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=400&q=75&fm=webp", options: ["Azul"], sizes: ["38", "40"] },
-            { name: "Jeans Wide Leg", price: 18000, cat: "Moda", sub: "Feminino", img: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=400&q=75&fm=webp", options: ["Azul"], sizes:["36", "38"] },
+            { name: "Jeans Boyfriend", price: 15500, cat: "Moda", sub: "Feminino", img: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=400&q=75&fm=webp", options: ["Azul"], sizes:["38", "40"] },
+            { name: "Jeans Wide Leg", price: 18000, cat: "Moda", sub: "Feminino", img: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=400&q=75&fm=webp", options:["Azul"], sizes:["36", "38"] },
             { name: "Calça Cargo Feminina", price: 14000, cat: "Moda", sub: "Feminino", img: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=400&q=75&fm=webp", options: ["Bege"], sizes: ["P", "M", "G"] },
             { name: "Calça Jogger", price: 9500, cat: "Moda", sub: "Feminino", img: "https://images.unsplash.com/photo-1552664110-ad30f2e4c521?w=400&q=75&fm=webp", options: ["Preto"], sizes: ["P", "M"] },
             { name: "Calça Pantalona Luxo", price: 22000, cat: "Moda", sub: "Feminino", img: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=400&q=75&fm=webp", options: ["Preto"], sizes: ["M", "G"] },
-            { name: "Calça Flare", price: 17000, cat: "Moda", sub: "Feminino", img: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=400&q=75&fm=webp", options: ["Azul Escuro"], sizes:["38", "40"] },
+            { name: "Calça Flare", price: 17000, cat: "Moda", sub: "Feminino", img: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=400&q=75&fm=webp", options:["Azul Escuro"], sizes:["38", "40"] },
             { name: "Calça de Alfaiataria", price: 25000, cat: "Moda", sub: "Feminino", img: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=400&q=75&fm=webp", options: ["Preto"], sizes: ["38", "40"] },
-            { name: "Calça Cigarrete", price: 13000, cat: "Moda", sub: "Feminino", img: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=400&q=75&fm=webp", options: ["Preto"], sizes: ["36", "38"] },
-            { name: "Leggings Fit", price: 7500, cat: "Moda", sub: "Feminino", img: "https://images.unsplash.com/photo-1506629082925-5941859949b8?w=400&q=75&fm=webp", options: ["Preto"], sizes:["P", "M", "G"] },
+            { name: "Calça Cigarrete", price: 13000, cat: "Moda", sub: "Feminino", img: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=400&q=75&fm=webp", options: ["Preto"], sizes:["36", "38"] },
+            { name: "Leggings Fit", price: 7500, cat: "Moda", sub: "Feminino", img: "https://images.unsplash.com/photo-1506629082925-5941859949b8?w=400&q=75&fm=webp", options:["Preto"], sizes:["P", "M", "G"] },
             { name: "Calça Biker", price: 8500, cat: "Moda", sub: "Feminino", img: "https://images.unsplash.com/photo-1506629082925-5941859949b8?w=400&q=75&fm=webp", options:["Grafite"], sizes: ["P", "M"] },
-            { name: "Calça Moletom", price: 11000, cat: "Moda", sub: "Feminino", img: "https://images.unsplash.com/photo-1552664110-ad30f2e4c521?w=400&q=75&fm=webp", options: ["Cinza"], sizes: ["P", "M", "G"] },
+            { name: "Calça Moletom", price: 11000, cat: "Moda", sub: "Feminino", img: "https://images.unsplash.com/photo-1552664110-ad30f2e4c521?w=400&q=75&fm=webp", options: ["Cinza"], sizes:["P", "M", "G"] },
             
             // --- FEMININO / FATO ---
-            { name: "Vestido Cintura Marcada", price: 25000, cat: "Moda Feminina", sub: "Evangélica", img: "https://images.unsplash.com/photo-1572804013307-59c855821758?w=400&q=75&fm=webp", options: ["Vermelho", "Azul", "Verde"], sizes:["P", "M", "G"] },
+            { name: "Vestido Cintura Marcada", price: 25000, cat: "Moda Feminina", sub: "Evangélica", img: "https://images.unsplash.com/photo-1572804013307-59c855821758?w=400&q=75&fm=webp", options:["Vermelho", "Azul", "Verde"], sizes:["P", "M", "G"] },
             { name: "Saia Midi Tecido Leve", price: 18000, cat: "Moda Feminina", sub: "Evangélica", img: "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400&q=75&fm=webp", options: ["Estampado", "Liso"], sizes:["38", "40", "42"] },
             { name: "Vestido Comportado Premium", price: 32000, cat: "Moda Feminina", sub: "Evangélica", img: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&q=75&fm=webp", options: ["Vinho", "Preto"], sizes: ["M", "G", "GG"] },
             { name: "Conjunto Oversized Casual", price: 28500, cat: "Moda Feminina", sub: "Conjuntos", img: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=75&fm=webp", options:["Bege", "Off-white"], sizes: ["Único"] },
-            { name: "Conjunto Blazer + Shorts",  price: 45000,  cat: "Moda Feminina",  sub: "Conjuntos",  img: "https://images.unsplash.com/photo-1548272332-6a282f3f4c80?w=400&q=75&fm=webp", options: ["Cores Ousadas"], sizes: ["P", "M", "G"] },
+            { name: "Conjunto Blazer + Shorts",  price: 45000,  cat: "Moda Feminina",  sub: "Conjuntos",  img: "https://images.unsplash.com/photo-1548272332-6a282f3f4c80?w=400&q=75&fm=webp", options: ["Cores Ousadas"], sizes:["P", "M", "G"] },
             { name: "Vestido Cetim Brilho", price: 55000, cat: "Moda Feminina", sub: "Gala", img: "https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=400&q=75&fm=webp", options:["Dourado", "Prata"], sizes: ["P", "M"] },
             { name: "Corte Sofisticado Executivo", price: 62000, cat: "Moda Feminina", sub: "Executiva", img: "https://images.unsplash.com/photo-1485230895905-ec17ba36b5bc?w=400&q=75&fm=webp", options: ["Azul Marinho", "Cinza"], sizes:["38", "40", "42", "44"] },
              
             // --- CATEGORIA / ACESSÓRIOS --- 
-            { name: "Cinto de Couro Executivo", price: 12000, cat: "Acessórios", sub: "Masculino", img: "https://images.unsplash.com/photo-1524234107056-1c1f48f64ab8?w=400&q=75&fm=webp", options: ["Preto", "Castanho"], sizes: ["P", "M", "G"] },
+            { name: "Cinto de Couro Executivo", price: 12000, cat: "Acessórios", sub: "Masculino", img: "https://images.unsplash.com/photo-1524234107056-1c1f48f64ab8?w=400&q=75&fm=webp", options: ["Preto", "Castanho"], sizes:["P", "M", "G"] },
             { name: "Carteira Slim Anti-Furto", price: 8500, cat: "Acessórios", sub: "Masculino", img: "https://images.unsplash.com/photo-1627123424574-724758594e93?w=400&q=75&fm=webp", options:["Preto", "Café"], sizes: ["Padrão"] },
             { name: "Bolsa de Ombro Feminina", price: 35000, cat: "Acessórios", sub: "Feminino", img: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&q=75&fm=webp", options: ["Nude", "Preto", "Vinho"], sizes:["P", "M", "G"] },
             { name: "Óculos de Sol Aviador", price: 15000, cat: "Acessórios", sub: "Unissex", img: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400&q=75&fm=webp", options: ["Dourado", "Preto"], sizes: ["Único"] },
@@ -395,30 +461,32 @@
             // --- FEMININO / CALÇADO ---
             { name: "Scarpin Clássico", price: 28000, cat: "Calçado", sub: "Salto", img: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=400&q=75&fm=webp", options: ["Preto"], sizes:["35", "36", "37"] },
             { name: "Salto Agulha (Stiletto)", price: 35000, cat: "Calçado", sub: "Salto", img: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=400&q=75&fm=webp", options: ["Preto"], sizes: ["36", "37"] },
-            { name: "Salto Bloco", price: 19000, cat: "Calçado", sub: "Salto", img: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=400&q=75&fm=webp", options: ["Bege"], sizes: ["35", "36"] },
+            { name: "Salto Bloco", price: 19000, cat: "Calçado", sub: "Salto", img: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=400&q=75&fm=webp", options:["Bege"], sizes: ["35", "36"] },
             { name: "Salto Anabela", price: 18500, cat: "Calçado", sub: "Salto", img: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=400&q=75&fm=webp", options: ["Nude"], sizes: ["36", "37"] },
             { name: "Plataforma", price: 24000, cat: "Calçado", sub: "Salto", img: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=400&q=75&fm=webp", options: ["Branco"], sizes:["35", "36", "37"] },
-            { name: "Sandálias de Salto", price: 15000, cat: "Calçado", sub: "Salto", img: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=400&q=75&fm=webp", options: ["Dourado"], sizes: ["35", "36", "37"] },
+            { name: "Sandálias de Salto", price: 15000, cat: "Calçado", sub: "Salto", img: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=400&q=75&fm=webp", options: ["Dourado"], sizes:["35", "36", "37"] },
             { name: "Branco Básico Sneaker", price: 12000, cat: "Calçado", sub: "Ténis", img: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&q=75&fm=webp", options: ["Branco"], sizes: ["38", "40", "42"] },
             { name: "Chunky Sneakers", price: 28000, cat: "Calçado", sub: "Ténis", img: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&q=75&fm=webp", options: ["Multicolor"], sizes:["36", "37", "38"] },
             { name: "Slip-on Confort", price: 10000, cat: "Calçado", sub: "Ténis", img: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&q=75&fm=webp", options: ["Preto"], sizes: ["35", "36", "37"] },
             
             // --- FEMININO / DESPORTO ---
-            { name: "Nike Corrida Air", price: 45000, cat: "Desporto", sub: "Nike", img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=75&fm=webp", options:["Azul"], sizes: ["38", "40", "42"] },
-            { name: "Adidas Treino Boost", price: 48000, cat: "Desporto", sub: "Adidas", img: "https://images.unsplash.com/photo-1587563871167-1ee9c731aefb?w=400&q=75&fm=webp", options: ["Branco"], sizes:["38", "40", "42"] },
-            { name: "Puma Caminhada", price: 32000, cat: "Desporto", sub: "Puma", img: "https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=400&q=75&fm=webp", options: ["Preto"], sizes: ["39", "40", "41"] },
-            { name: "New Balance Casual", price: 55000, cat: "Desporto", sub: "New Balance", img: "https://images.unsplash.com/photo-1539185441755-769473a23570?w=400&q=75&fm=webp", options: ["Bege"], sizes: ["40", "41", "42"] },
+            { name: "Nike Corrida Air", price: 45000, cat: "Desporto", sub: "Nike", img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=75&fm=webp", options:["Azul"], sizes:["38", "40", "42"] },
+            { name: "Adidas Treino Boost", price: 48000, cat: "Desporto", sub: "Adidas", img: "https://images.unsplash.com/photo-1587563871167-1ee9c731aefb?w=400&q=75&fm=webp", options:["Branco"], sizes:["38", "40", "42"] },
+            { name: "Puma Caminhada", price: 32000, cat: "Desporto", sub: "Puma", img: "https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=400&q=75&fm=webp", options: ["Preto"], sizes:["39", "40", "41"] },
+            { name: "New Balance Casual", price: 55000, cat: "Desporto", sub: "New Balance", img: "https://images.unsplash.com/photo-1539185441755-769473a23570?w=400&q=75&fm=webp", options:["Bege"], sizes: ["40", "41", "42"] },
         
             // --- LALIGA --- 
-            { name: "T-shirt Atlético de Madrid", price: 5000, cat: "Desporto", sub: "Espanha", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options: ["Listrado"], sizes: ["M", "L"] },
+            { name: "T-shirt Atlético de Madrid", price: 5000, cat: "Desporto", sub: "Espanha", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options:["Listrado"], sizes: ["M", "L"] },
             { name: "T-shirt Sevilla FC", price: 5000, cat: "Desporto", sub: "Espanha", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options: ["Branco"], sizes:["M", "L"] },
+            { name: "T-shirt Barcelona", price: 5000, cat: "Desporto", sub: "Futebol", img: "https://images.pexels.com/photos/14001185/pexels-photo-14001185.jpeg?auto=compress&w=400", options: ["Principal"], sizes:["S", "M", "L"] },
+            { name: "T-shirt Real Madrid", price: 5000, cat: "Desporto", sub: "Futebol", img: "https://images.pexels.com/photos/14001184/pexels-photo-14001184.jpeg?auto=compress&w=400", options: ["Branco"], sizes:["S", "M", "L"] },
             
             // --- INGLATERRA --- 
-            { name: "T-shirt Manchester United", price: 5000, cat: "Desporto", sub: "Inglaterra", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options: ["Vermelho"], sizes: ["S", "M", "L"] },
+            { name: "T-shirt Manchester United", price: 5000, cat: "Desporto", sub: "Inglaterra", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options:["Vermelho"], sizes: ["S", "M", "L"] },
             { name: "T-shirt Manchester City", price: 5000, cat: "Desporto", sub: "Inglaterra", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options: ["Azul Celeste"], sizes: ["S", "M", "L"] },
             { name: "T-shirt Liverpool FC", price: 5000, cat: "Desporto", sub: "Inglaterra", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options: ["Vermelho"], sizes: ["S", "M", "L"] },
             { name: "T-shirt Chelsea FC", price: 5000, cat: "Desporto", sub: "Inglaterra", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options: ["Azul"], sizes:["S", "M", "L"] },
-            { name: "T-shirt Arsenal FC", price: 5000, cat: "Desporto", sub: "Inglaterra", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options: ["Vermelho"], sizes: ["S", "M", "L"] },
+            { name: "T-shirt Arsenal FC", price: 5000, cat: "Desporto", sub: "Inglaterra", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options: ["Vermelho"], sizes:["S", "M", "L"] },
             
             // --- FRANÇA --- 
             { name: "T-shirt Olympique de Marseille", price: 5000, cat: "Desporto", sub: "França", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options:["Branco"], sizes: ["M", "L"] },
@@ -426,21 +494,21 @@
             { name: "T-shirt AS Monaco", price: 5000, cat: "Desporto", sub: "França", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options: ["Branco/Vermelho"], sizes:["M", "L"] },
             
             // --- PORTUGAL ---
-            { name: "T-shirt SL Benfica", price: 5000, cat: "Desporto", sub: "Portugal", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options: ["Vermelho"], sizes: ["S", "M", "L"] },
+            { name: "T-shirt SL Benfica", price: 5000, cat: "Desporto", sub: "Portugal", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options: ["Vermelho"], sizes:["S", "M", "L"] },
             { name: "T-shirt FC Porto", price: 5000, cat: "Desporto", sub: "Portugal", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options: ["Azul/Branco"], sizes: ["S", "M", "L"] },
-            { name: "T-shirt Sporting CP", price: 5000, cat: "Desporto", sub: "Portugal", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options: ["Verde/Branco"], sizes: ["S", "M", "L"] },
-            { name: "T-shirt SC Braga", price: 5000, cat: "Desporto", sub: "Portugal", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options: ["Vermelho"], sizes:["S", "M", "L"] },
+            { name: "T-shirt Sporting CP", price: 5000, cat: "Desporto", sub: "Portugal", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options: ["Verde/Branco"], sizes:["S", "M", "L"] },
+            { name: "T-shirt SC Braga", price: 5000, cat: "Desporto", sub: "Portugal", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options:["Vermelho"], sizes:["S", "M", "L"] },
             
             // --- GIRA BOLA --- 
-            { name: "T-shirt Petro de Luanda", price: 5000, cat: "Desporto", sub: "Angola", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options: ["Amarelo/Azul"], sizes:["M", "L", "XL"] },
-            { name: "T-shirt Primeiro de Agosto", price: 5000, cat: "Desporto", sub: "Angola", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options: ["Vermelho/Preto"], sizes: ["M", "L", "XL"] },
-            { name: "T-shirt Interclube", price: 5000, cat: "Desporto", sub: "Angola", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options: ["Azul"], sizes:["M", "L"] },
+            { name: "T-shirt Petro de Luanda", price: 5000, cat: "Desporto", sub: "Angola", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options:["Amarelo/Azul"], sizes:["M", "L", "XL"] },
+            { name: "T-shirt Primeiro de Agosto", price: 5000, cat: "Desporto", sub: "Angola", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options: ["Vermelho/Preto"], sizes:["M", "L", "XL"] },
+            { name: "T-shirt Interclube", price: 5000, cat: "Desporto", sub: "Angola", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options:["Azul"], sizes:["M", "L"] },
             { name: "T-shirt Sagrada Esperança", price: 5000, cat: "Desporto", sub: "Angola", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options: ["Verde"], sizes: ["M", "L"] },
             
             // --- HOLANDA ---
-            { name: "T-shirt Ajax", price: 5000, cat: "Desporto", sub: "Holanda", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options: ["Branco/Vermelho"], sizes:["M", "L"] },
+            { name: "T-shirt Ajax", price: 5000, cat: "Desporto", sub: "Holanda", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options:["Branco/Vermelho"], sizes:["M", "L"] },
             { name: "T-shirt PSV Eindhoven", price: 5000, cat: "Desporto", sub: "Holanda", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options: ["Listrado"], sizes: ["M", "L"] },
-            { name: "T-shirt Feyenoord", price: 5000, cat: "Desporto", sub: "Holanda", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options: ["Branco/Vermelho"], sizes: ["M", "L"] },
+            { name: "T-shirt Feyenoord", price: 5000, cat: "Desporto", sub: "Holanda", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options: ["Branco/Vermelho"], sizes:["M", "L"] },
             
             // --- ALEMANHA ---
             { name: "T-shirt Bayern Munich", price: 5000, cat: "Desporto", sub: "Alemanha", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options: ["Vermelho"], sizes: ["S", "M", "L"] },
@@ -448,22 +516,95 @@
             { name: "T-shirt RB Leipzig", price: 5000, cat: "Desporto", sub: "Alemanha", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options:["Branco"], sizes: ["S", "M", "L"] },
             
             // --- ITÁLIA --- 
-            { name: "T-shirt Juventus", price: 5000, cat: "Desporto", sub: "Itália", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options: ["Branco/Preto"], sizes: ["S", "M", "L"] },
-            { name: "T-shirt AC Milan", price: 5000, cat: "Desporto", sub: "Itália", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options: ["Vermelho/Preto"], sizes: ["S", "M", "L"] },
-            { name: "T-shirt Inter Milan", price: 5000, cat: "Desporto", sub: "Itália", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options: ["Azul/Preto"], sizes: ["S", "M", "L"] },
+            { name: "T-shirt Juventus", price: 5000, cat: "Desporto", sub: "Itália", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options:["Branco/Preto"], sizes: ["S", "M", "L"] },
+            { name: "T-shirt AC Milan", price: 5000, cat: "Desporto", sub: "Itália", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options: ["Vermelho/Preto"], sizes:["S", "M", "L"] },
+            { name: "T-shirt Inter Milan", price: 5000, cat: "Desporto", sub: "Itália", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options:["Azul/Preto"], sizes: ["S", "M", "L"] },
             { name: "T-shirt Napoli", price: 5000, cat: "Desporto", sub: "Itália", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options: ["Azul"], sizes: ["S", "M", "L"] }
         ];
 
         let cart =[];
         let activeMainCat = "Todos";
         let activeSubCat = "Todos";
+        
+        // Novas variáveis para Autenticação e Histórico
+        let currentUser = null;
+        let purchaseHistory =[];
 
-        // AQUI FOI CORRIGIDO O ERRO FATAL (faltava "});")
         document.addEventListener("DOMContentLoaded", () => {
+            checkAuth(); // Verifica se o usuário já fez login antes
             renderNav();
             renderProducts();
         });
 
+        // --- SISTEMA DE LOGIN E HISTÓRICO ---
+        function checkAuth() {
+            const savedUser = localStorage.getItem('frm_user');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('cust-name').value = currentUser.name;
+                loadHistory();
+            } else {
+                document.getElementById('auth-screen').style.display = 'flex';
+            }
+        }
+
+        function loginUser() {
+            const name = document.getElementById('auth-name').value.trim();
+            const dob = document.getElementById('auth-dob').value;
+            
+            if(!name || !dob) {
+                return alert("Por favor, preencha seu nome e data de nascimento!");
+            }
+
+            currentUser = { name, dob };
+            localStorage.setItem('frm_user', JSON.stringify(currentUser));
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('cust-name').value = currentUser.name;
+            loadHistory();
+            alert(`Bem-vindo(a), ${name}!`);
+        }
+
+        function logoutUser() {
+            localStorage.removeItem('frm_user');
+            currentUser = null;
+            purchaseHistory =[];
+            closePanels();
+            document.getElementById('auth-name').value = '';
+            document.getElementById('auth-dob').value = '';
+            document.getElementById('auth-screen').style.display = 'flex'; // Volta a bloquear a tela
+        }
+
+        function loadHistory() {
+            const savedHistory = localStorage.getItem('frm_history_' + currentUser.name);
+            if(savedHistory) {
+                purchaseHistory = JSON.parse(savedHistory);
+            } else {
+                purchaseHistory =[];
+            }
+        }
+
+        function openHistory() {
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('history-panel').style.display = 'block';
+            
+            const list = document.getElementById('history-items');
+            if(purchaseHistory.length === 0) {
+                list.innerHTML = "<p style='color:var(--text-dim); text-align:center;'>Nenhuma compra realizada ainda.</p>";
+            } else {
+                // Inverte para mostrar a compra mais recente no topo
+                const reversed = [...purchaseHistory].reverse();
+                list.innerHTML = reversed.map((order) => `
+                    <div style="border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 15px;">
+                        <div style="color:var(--text-dim); font-size:0.85rem; margin-bottom:8px;">📅 ${order.date}</div>
+                        ${order.items.map(i => `<div style="font-size:0.85rem; color:#fff;">- ${i.name}[${i.selectedColor} | ${i.selectedSize}]</div>`).join('')}
+                        <div style="font-weight:bold; margin-top:8px; font-size:1rem; color:var(--accent);">Total Pago: ${order.total.toLocaleString()} Kz</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // --- SISTEMA ORIGINAL DA LOJA ---
         function renderNav() {
             const mains =["Todos", ...new Set(db.map(p => p.cat))];
             document.getElementById('main-cats').innerHTML = mains.map(m => `
@@ -541,7 +682,19 @@
 
             let msg = `*PEDIDO FRM BOUTIQUE*%0A*Cliente:* ${name}%0A*Endereço:* ${addr}%0A%0A*Itens:*%0A`;
             cart.forEach(i => msg += `- ${i.name}[${i.selectedColor}/${i.selectedSize}]%0A`);
-            msg += `%0A*TOTAL:* ${cart.reduce((s, i) => s + i.price, 0).toLocaleString()} Kz`;
+            const totalOrder = cart.reduce((s, i) => s + i.price, 0);
+            msg += `%0A*TOTAL:* ${totalOrder.toLocaleString()} Kz`;
+
+            // SALVAR NO HISTÓRICO DE COMPRAS ANTES DE FINALIZAR
+            if(currentUser) {
+                const orderDate = new Date().toLocaleString();
+                purchaseHistory.push({
+                    date: orderDate,
+                    total: totalOrder,
+                    items: [...cart]
+                });
+                localStorage.setItem('frm_history_' + currentUser.name, JSON.stringify(purchaseHistory));
+            }
 
             window.open(`https://wa.me/244941044772?text=${msg}`);
             cart =[]; updateCartBadge(); closePanels();
