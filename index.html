@@ -5,8 +5,8 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loja de Cosméticos e Eletrônicos em Angola | Tudo em um só lugar</title>
-    <meta name="description" content="Compre acessórios, cosméticos e eletrônicos com entrega rápida em Angola. Tudo em um só lugar.">
+    <title id="seo-title">Loja de Cosméticos e Eletrônicos em Angola | Tudo em um só lugar</title>
+    <meta id="seo-desc" name="description" content="Compre acessórios, cosméticos e eletrônicos com entrega rápida em Angola. Tudo em um só lugar.">
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
@@ -130,6 +130,7 @@
             object-fit: cover;
             filter: grayscale(20%);
             transition: 0.5s;
+            cursor: pointer;
         }
 
         .card:hover .card-img { filter: grayscale(0%); transform: scale(1.05); }
@@ -387,6 +388,12 @@
         </div>
     </div>
 
+    <!-- HISTÓRICO DE VISUALIZAÇÕES (SEO / UX) -->
+    <section id="view-history-section" class="container" style="display: none; margin-top: 20px; border-bottom: 1px solid var(--border); padding-bottom: 20px;">
+        <h2 style="color: var(--accent); margin-bottom: 15px; font-size: 1.2rem; text-transform: uppercase;">Visto Recentemente</h2>
+        <div id="view-history-display" style="display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: thin;"></div>
+    </section>
+
     <!-- VITRINE DE PRODUTOS -->
     <main class="container">
         <div id="product-display" class="grid"></div>
@@ -452,33 +459,16 @@
             
             <input type="text" id="cust-name" class="form-control" placeholder="Seu Nome Completo" disabled style="opacity: 0.7;">
             
-            <!-- Seleção da Província -->
-            <select id="cust-province" class="form-control">
+            <!-- Seleção da Província e Município Dinâmico -->
+            <select id="cust-province" class="form-control" onchange="updateMunicipalities('cust-province', 'cust-municipality')">
                 <option value="" disabled selected>Selecione a sua Província...</option>
-                <option value="Bengo">Bengo</option>
-                <option value="Benguela">Benguela</option>
-                <option value="Bié">Bié</option>
-                <option value="Cabinda">Cabinda</option>
-                <option value="Cuando Cubango">Cuando Cubango</option>
-                <option value="Cubango">Cubango</option>
-                <option value="Cuanza Norte">Cuanza Norte</option>
-                <option value="Cuanza Sul">Cuanza Sul</option>
-                <option value="Cunene">Cunene</option>
-                <option value="Huambo">Huambo</option>
-                <option value="Huíla">Huíla</option>
-                <option value="Icolo e Bengo">Icolo e Bengo</option>
-                <option value="Luanda">Luanda</option>
-                <option value="Lunda Norte">Lunda Norte</option>
-                <option value="Lunda Sul">Lunda Sul</option>
-                <option value="Malanje">Malanje</option>
-                <option value="Moxico">Moxico</option>
-                <option value="Moxico Leste">Moxico Leste</option>
-                <option value="Namibe">Namibe</option>
-                <option value="Uíge">Uíge</option>
-                <option value="Zaire">Zaire</option>
+            </select>
+
+            <select id="cust-municipality" class="form-control">
+                <option value="" disabled selected>Selecione primeiro a Província</option>
             </select>
             
-            <input type="text" id="cust-address" class="form-control" placeholder="Município / Bairro / Rua">
+            <input type="text" id="cust-address" class="form-control" placeholder="Bairro / Rua / Ponto de Referência">
             
             <!-- Seleção do Método de Pagamento -->
             <select id="cust-payment" class="form-control">
@@ -497,30 +487,15 @@
     <div id="review-panel" class="panel">
         <h2 style="color: var(--accent); margin-bottom: 20px;">Deixe a sua Avaliação</h2>
         <input type="text" id="rev-name" class="form-control" placeholder="Seu Nome">
-        <select id="rev-prov" class="form-control">
+        
+        <select id="rev-prov" class="form-control" onchange="updateMunicipalities('rev-prov', 'rev-municipality')">
             <option value="" disabled selected>De qual província nos avalia?</option>
-            <option value="Bengo">Bengo</option>
-            <option value="Benguela">Benguela</option>
-            <option value="Bié">Bié</option>
-            <option value="Cabinda">Cabinda</option>
-            <option value="Cuando Cubango">Cuando Cubango</option>
-            <option value="Cubango">Cubango</option>
-            <option value="Cuanza Norte">Cuanza Norte</option>
-            <option value="Cuanza Sul">Cuanza Sul</option>
-            <option value="Cunene">Cunene</option>
-            <option value="Huambo">Huambo</option>
-            <option value="Huíla">Huíla</option>
-            <option value="Icolo e Bengo">Icolo e Bengo</option>
-            <option value="Luanda">Luanda</option>
-            <option value="Lunda Norte">Lunda Norte</option>
-            <option value="Lunda Sul">Lunda Sul</option>
-            <option value="Malanje">Malanje</option>
-            <option value="Moxico">Moxico</option>
-            <option value="Moxico Leste">Moxico Leste</option>
-            <option value="Namibe">Namibe</option>
-            <option value="Uíge">Uíge</option>
-            <option value="Zaire">Zaire</option>
         </select>
+        
+        <select id="rev-municipality" class="form-control">
+            <option value="" disabled selected>Selecione primeiro a Província</option>
+        </select>
+
         <textarea id="rev-text" class="form-control" placeholder="Conte-nos como foi a sua experiência... (Entrega, atendimento, produtos)"></textarea>
         <button class="btn-buy" onclick="submitReview()">PUBLICAR AVALIAÇÃO</button>
     </div>
@@ -547,6 +522,63 @@
     </div>
 
     <script>
+    // --- FUNÇÃO DE SEGURANÇA (Prevenção contra XSS - Hacker) ---
+    function escapeHTML(str) {
+        if (!str) return '';
+        const div = document.createElement('div');
+        div.innerText = str;
+        return div.innerHTML;
+    }
+
+    // --- DADOS DE MUNICÍPIOS E PROVÍNCIAS ---
+    const angolaLocations = {
+        "Bengo": ["Ambriz", "Bula Atumba", "Dande", "Dembos", "Nambuangongo", "Pango Aluquém"],
+        "Benguela": ["Baía Farta", "Balombo", "Benguela", "Bocoio", "Caimbambo", "Catumbela", "Chongoroi", "Cubal", "Ganda", "Lobito"],
+        "Bié": ["Andulo", "Camacupa", "Catabola", "Chinguar", "Chitembo", "Cuemba", "Cunhinga", "Kuito", "Nharea"],
+        "Cabinda": ["Belize", "Buco-Zau", "Cabinda", "Cacongo"],
+        "Cuando Cubango": ["Calai", "Cuangar", "Cuchi", "Cuito Cuanavale", "Dirico", "Mavinga", "Nancova", "Rivungo", "Menongue"],
+        "Cubango": ["(Municípios da nova divisão do Cubango)"],
+        "Cuanza Norte": ["Ambaca", "Banga", "Bolongongo", "Cambambe", "Cazengo", "Golungo Alto", "Gonguembo", "Lucala", "Quiculungo", "Samba Caju"],
+        "Cuanza Sul": ["Amboim", "Cassongue", "Cela", "Conda", "Ebo", "Libolo", "Mussende", "Porto Amboim", "Quibala", "Quilenda", "Seles", "Sumbe"],
+        "Cunene": ["Cahama", "Cuanhama", "Curoca", "Cuvelai", "Namacunde", "Ombadja"],
+        "Huambo": ["Bailundo", "Caála", "Catchiungo", "Ekunha", "Huambo", "Londuimbali", "Longonjo", "Mungo", "Tchicala-Tcholoanga", "Tchindjenje", "Ucuma"],
+        "Huíla": ["Caconda", "Cacula", "Caluquembe", "Chiange", "Chibia", "Chicomba", "Chipindo", "Cuvango", "Humpata", "Jamba", "Lubango", "Matala", "Quilengues", "Quipungo"],
+        "Icolo e Bengo": ["Catete", "Bela Vista", "Bom Jesus", "Caculo Cahango", "Cassoneca"],
+        "Luanda": ["Belas", "Cacuaco", "Cazenga", "Kilamba Kiaxi", "Luanda", "Talatona", "Viana"],
+        "Lunda Norte": ["Cambulo", "Capenda-Camulemba", "Caungula", "Chitato", "Cuango", "Cuílo", "Lóvua", "Lubalo", "Lucapa", "Xá-Muteba"],
+        "Lunda Sul": ["Cacolo", "Dala", "Muconda", "Saurimo"],
+        "Malanje": ["Cacuso", "Calandula", "Cambundi-Catembo", "Cangandala", "Caombo", "Cuaba Nzogo", "Cunda-Dia-Baze", "Luquembo", "Malanje", "Marimba", "Massango", "Mucari", "Quela", "Quirima"],
+        "Moxico": ["Alto Zambeze", "Bundas", "Camanongue", "Léua", "Luau", "Luacano", "Luchazes", "Moxico (Kameia)", "Galo", "Moxico (Sede)"],
+        "Moxico Leste": ["(Municípios da nova divisão Moxico Leste)"],
+        "Namibe": ["Bibala", "Camucuio", "Moçâmedes", "Tômbua", "Virei"],
+        "Uíge": ["Ambuila", "Bembe", "Buengas", "Bungo", "Cangola", "Damba", "Macocola", "Milunga", "Mucaba", "Negage", "Puri", "Quimbele", "Quitexe", "Sanza Pombo", "Songo", "Uíge"],
+        "Zaire": ["Cuimba", "M'Banza Kongo", "Nóqui", "N'Zeto", "Soyo", "Tomboco"]
+    };
+
+    function populateProvinces() {
+        const provSelects = [document.getElementById('cust-province'), document.getElementById('rev-prov')];
+        const provinces = Object.keys(angolaLocations).sort();
+        
+        provSelects.forEach(select => {
+            if(!select) return;
+            provinces.forEach(p => {
+                select.innerHTML += `<option value="${p}">${p}</option>`;
+            });
+        });
+    }
+
+    function updateMunicipalities(provId, munId) {
+        const prov = document.getElementById(provId).value;
+        const munSelect = document.getElementById(munId);
+        munSelect.innerHTML = '<option value="" disabled selected>Selecione o Município...</option>';
+        
+        if(angolaLocations[prov]) {
+            angolaLocations[prov].sort().forEach(m => {
+                munSelect.innerHTML += `<option value="${m}">${m}</option>`;
+            });
+        }
+    }
+
     let db = JSON.parse(localStorage.getItem('frm_master_db')) ||[
             // --- SMARTPHONES ---
             { name: "iPhone 7", price: 70000, cat: "Smartphones", sub: "Apple", img: "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=400&q=75&fm=webp", options: ["Preto", "Prata", "Rose"], sizes:["32GB", "128GB"] },
@@ -712,34 +744,36 @@
             { name: "T-shirt Napoli", price: 5000, cat: "Desporto", sub: "Itália", img: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&q=75&fm=webp", options:["Azul"], sizes: ["S", "M", "L"] }
         ];
 
-        // --- SISTEMA DE AVALIAÇÕES DINÂMICO ---
-        let reviewsDB = JSON.parse(localStorage.getItem('frm_reviews')) ||[
-            { text: "Atendimento excelente! Comprei meu iPhone e o relógio, chegou muito rápido aqui em Luanda. Recomendo de olhos fechados!", author: "Ana Silva", prov: "Luanda" },
-            { text: "Melhor loja de Angola. Comprei um perfume árabe e a qualidade é 100% original. O pagamento no local da entrega me deu muita segurança e confiança.", author: "Carlos Mateus", prov: "Benguela" },
-            { text: "Comprei roupas para um evento e um tênis. Tudo perfeito. Achei ótimo não precisar sair de casa, encontrei tudo em um só lugar de verdade!", author: "Joana Mendes", prov: "Huíla" },
-            { text: "Entrega super rápida no Huambo. O smartphone chegou intacto e com tudo a funcionar na perfeição.", author: "Paulo Gomes", prov: "Huambo" },
-            { text: "Adorei os cosméticos, totalmente originais e chegaram muito bem embalados.", author: "Marta Sousa", prov: "Cabinda" },
-            { text: "Paguei por Unitel Money e foi super prático. Não imaginava que seria tão fácil, recomendo a todos.", author: "Lucas Fernandes", prov: "Namibe" },
-            { text: "O facto de ter tudo num só lugar facilita imenso a nossa vida. Comprei roupa e perfume para o meu marido.", author: "Isabela Costa", prov: "Luanda" },
-            { text: "Atendimento ao cliente impecável pelo WhatsApp. Esclareceram todas as minhas dúvidas rapidamente.", author: "Miguel Artur", prov: "Bié" },
-            { text: "Comprei um PS5 (eletrônicos) e a entrega foi no mesmo dia em Luanda! Muito rápidos.", author: "Rui Santos", prov: "Luanda" },
-            { text: "Preços justos e o pagamento na entrega traz muita segurança para nós que moramos em províncias mais distantes.", author: "Fátima Lima", prov: "Lunda Sul" },
-            { text: "Comprei um vestido para gala, o tecido é maravilhoso e assentou-me perfeitamente! Obrigada FRM Boutique.", author: "Sofia Almeida", prov: "Bengo" },
-            { text: "Serviço 5 estrelas. Os ténis da Nike são mesmo originais. Ganharam um cliente fiel.", author: "Hélder Maciel", prov: "Malanje" }
+        let reviewsDB = JSON.parse(localStorage.getItem('frm_reviews')) || [
+            { text: "Atendimento excelente! Comprei meu iPhone e o relógio, chegou muito rápido aqui em Luanda. Recomendo de olhos fechados!", author: "Ana Silva", prov: "Luanda", mun: "Cazenga" },
+            { text: "Melhor loja de Angola. Comprei um perfume árabe e a qualidade é 100% original. O pagamento no local da entrega me deu muita segurança e confiança.", author: "Carlos Mateus", prov: "Benguela", mun: "Lobito" },
+            { text: "Comprei roupas para um evento e um tênis. Tudo perfeito. Achei ótimo não precisar sair de casa, encontrei tudo em um só lugar de verdade!", author: "Joana Mendes", prov: "Huíla", mun: "Lubango" },
+            { text: "Entrega super rápida no Huambo. O smartphone chegou intacto e com tudo a funcionar na perfeição.", author: "Paulo Gomes", prov: "Huambo", mun: "Huambo" },
+            { text: "Adorei os cosméticos, totalmente originais e chegaram muito bem embalados.", author: "Marta Sousa", prov: "Cabinda", mun: "Cabinda" },
+            { text: "Paguei por Unitel Money e foi super prático. Não imaginava que seria tão fácil, recomendo a todos.", author: "Lucas Fernandes", prov: "Namibe", mun: "Moçâmedes" },
+            { text: "O facto de ter tudo num só lugar facilita imenso a nossa vida. Comprei roupa e perfume para o meu marido.", author: "Isabela Costa", prov: "Luanda", mun: "Belas" },
+            { text: "Atendimento ao cliente impecável pelo WhatsApp. Esclareceram todas as minhas dúvidas rapidamente.", author: "Miguel Artur", prov: "Bié", mun: "Kuito" },
+            { text: "Comprei um PS5 (eletrônicos) e a entrega foi no mesmo dia em Luanda! Muito rápidos.", author: "Rui Santos", prov: "Luanda", mun: "Luanda" },
+            { text: "Preços justos e o pagamento na entrega traz muita segurança para nós que moramos em províncias mais distantes.", author: "Fátima Lima", prov: "Lunda Sul", mun: "Saurimo" },
+            { text: "Comprei um vestido para gala, o tecido é maravilhoso e assentou-me perfeitamente! Obrigada FRM Boutique.", author: "Sofia Almeida", prov: "Bengo", mun: "Dande" },
+            { text: "Serviço 5 estrelas. Os ténis da Nike são mesmo originais. Ganharam um cliente fiel.", author: "Hélder Maciel", prov: "Malanje", mun: "Malanje" }
         ];
 
-        let cart =[];
+        let cart = [];
+        let viewHistory = JSON.parse(localStorage.getItem('frm_views')) || [];
         let activeMainCat = "Todos";
         let activeSubCat = "Todos";
         
         let currentUser = null;
-        let purchaseHistory =[];
+        let purchaseHistory = [];
 
         document.addEventListener("DOMContentLoaded", () => {
+            populateProvinces();
             checkAuth();
             renderNav();
             renderProducts();
             renderReviews();
+            renderViewHistory();
         });
 
         function checkAuth() {
@@ -747,7 +781,7 @@
             if (savedUser) {
                 currentUser = JSON.parse(savedUser);
                 document.getElementById('auth-screen').style.display = 'none';
-                document.getElementById('cust-name').value = currentUser.name;
+                document.getElementById('cust-name').value = escapeHTML(currentUser.name);
                 loadHistory();
             } else {
                 document.getElementById('auth-screen').style.display = 'flex';
@@ -765,15 +799,15 @@
             currentUser = { name, dob };
             localStorage.setItem('frm_user', JSON.stringify(currentUser));
             document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('cust-name').value = currentUser.name;
+            document.getElementById('cust-name').value = escapeHTML(currentUser.name);
             loadHistory();
-            alert(`Bem-vindo(a), ${name}!`);
+            alert(`Bem-vindo(a), ${escapeHTML(name)}!`);
         }
 
         function logoutUser() {
             localStorage.removeItem('frm_user');
             currentUser = null;
-            purchaseHistory =[];
+            purchaseHistory = [];
             closePanels();
             document.getElementById('auth-name').value = '';
             document.getElementById('auth-dob').value = '';
@@ -785,7 +819,7 @@
             if(savedHistory) {
                 purchaseHistory = JSON.parse(savedHistory);
             } else {
-                purchaseHistory =[];
+                purchaseHistory = [];
             }
         }
 
@@ -800,37 +834,96 @@
                 const reversed = [...purchaseHistory].reverse();
                 list.innerHTML = reversed.map((order) => `
                     <div style="border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 15px;">
-                        <div style="color:var(--text-dim); font-size:0.85rem; margin-bottom:8px;">📅 ${order.date}</div>
-                        ${order.items.map(i => `<div style="font-size:0.85rem; color:#fff;">- ${i.name}[${i.selectedColor} | ${i.selectedSize}]</div>`).join('')}
+                        <div style="color:var(--text-dim); font-size:0.85rem; margin-bottom:8px;">📅 ${escapeHTML(order.date)}</div>
+                        ${order.items.map(i => `<div style="font-size:0.85rem; color:#fff;">- ${escapeHTML(i.name)} [${escapeHTML(i.selectedColor)} | ${escapeHTML(i.selectedSize)}]</div>`).join('')}
                         <div style="font-weight:bold; margin-top:8px; font-size:1rem; color:var(--accent);">Total Pago: ${order.total.toLocaleString()} Kz</div>
                     </div>
                 `).join('');
             }
         }
 
+        // --- ATUALIZAÇÃO DE SEO DINÂMICO ---
+        function updateSEO() {
+            const title = document.getElementById('seo-title');
+            const desc = document.getElementById('seo-desc');
+            
+            let currentTitle = "Loja de Cosméticos e Eletrônicos em Angola | Tudo em um só lugar";
+            let currentDesc = "Compre acessórios, cosméticos e eletrônicos com entrega rápida em Angola.";
+
+            if(activeMainCat !== "Todos") {
+                currentTitle = `${activeMainCat} em Angola | FRM BOUTIQUE`;
+                currentDesc = `As melhores opções de ${activeMainCat} com entrega rápida em todas as províncias. Compre na FRM Boutique.`;
+                
+                if(activeSubCat !== "Todos") {
+                    currentTitle = `${activeSubCat} - ${activeMainCat} | FRM BOUTIQUE`;
+                    currentDesc = `Encontre ${activeSubCat} originais. Produtos de ${activeMainCat} premium.`;
+                }
+            }
+            
+            title.innerText = currentTitle;
+            desc.setAttribute("content", currentDesc);
+        }
+
         function renderNav() {
-            const mains =["Todos", ...new Set(db.map(p => p.cat))];
+            const mains = ["Todos", ...new Set(db.map(p => p.cat))];
             document.getElementById('main-cats').innerHTML = mains.map(m => `
                 <button class="btn-cat ${m === activeMainCat ? 'active' : ''}" onclick="setMainCat('${m}')">${m}</button>
             `).join('');
 
-            const subs =["Todos", ...new Set(db.filter(p => activeMainCat === "Todos" || p.cat === activeMainCat).map(p => p.sub))];
+            const subs = ["Todos", ...new Set(db.filter(p => activeMainCat === "Todos" || p.cat === activeMainCat).map(p => p.sub))];
             document.getElementById('sub-cats').innerHTML = subs.map(s => `
                 <button class="btn-cat btn-sub ${s === activeSubCat ? 'active' : ''}" onclick="setSubCat('${s}')">${s}</button>
             `).join('');
         }
 
-        function setMainCat(c) { activeMainCat = c; activeSubCat = "Todos"; renderNav(); renderProducts(); }
-        function setSubCat(s) { activeSubCat = s; renderNav(); renderProducts(); }
+        function setMainCat(c) { activeMainCat = c; activeSubCat = "Todos"; renderNav(); renderProducts(); updateSEO(); }
+        function setSubCat(s) { activeSubCat = s; renderNav(); renderProducts(); updateSEO(); }
+
+        // --- SISTEMA DE VISUALIZAÇÕES / HISTÓRICO SEO ---
+        function registerView(dbIndex) {
+            const product = db[dbIndex];
+            // Remove se já existe para colocar no topo (mais recente)
+            viewHistory = viewHistory.filter(p => p.name !== product.name);
+            viewHistory.unshift(product);
+            if(viewHistory.length > 8) viewHistory.pop(); // Mantém os últimos 8
+            
+            localStorage.setItem('frm_views', JSON.stringify(viewHistory));
+            renderViewHistory();
+
+            // Atualiza o SEO temporariamente para a visualização do produto
+            document.getElementById('seo-title').innerText = `${product.name} | FRM BOUTIQUE`;
+            document.getElementById('seo-desc').setAttribute("content", `Compre ${product.name} da marca ${product.sub} por apenas ${product.price} Kz. Entregas em Angola.`);
+        }
+
+        function renderViewHistory() {
+            const container = document.getElementById('view-history-display');
+            const section = document.getElementById('view-history-section');
+            
+            if(viewHistory.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+            
+            section.style.display = 'block';
+            container.innerHTML = viewHistory.map((p) => `
+                <div style="min-width: 140px; text-align: center; cursor: pointer;" onclick="setMainCat('${p.cat}')">
+                    <img src="${p.img}" style="width: 100%; height: 100px; object-fit: cover; border-radius: 12px; margin-bottom: 5px;">
+                    <div style="font-size: 0.75rem; color: #fff; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.name}</div>
+                    <div style="font-size: 0.7rem; color: var(--accent);">${p.price.toLocaleString()} Kz</div>
+                </div>
+            `).join('');
+        }
 
         function renderProducts() {
             const filtered = db.filter(p => {
                 return (activeMainCat === "Todos" || p.cat === activeMainCat) && (activeSubCat === "Todos" || p.sub === activeSubCat);
             });
 
-            document.getElementById('product-display').innerHTML = filtered.map((p, i) => `
+            document.getElementById('product-display').innerHTML = filtered.map((p, i) => {
+                const globalIndex = db.findIndex(x => x.name === p.name);
+                return `
                 <div class="card">
-                    <img src="${p.img}" class="card-img">
+                    <img src="${p.img}" class="card-img" onclick="registerView(${globalIndex}); alert('Visualizando: ${escapeHTML(p.name)}');">
                     <div class="card-body">
                         <span class="card-brand">${p.sub}</span>
                         <h3 class="card-title">${p.name}</h3>
@@ -843,21 +936,20 @@
                             </select>
                         </div>
                         <div class="price">${p.price.toLocaleString()} Kz</div>
-                        <button class="btn-buy" onclick="addToCart(${db.indexOf(p)}, ${i})">ADICIONAR</button>
+                        <button class="btn-buy" onclick="addToCart(${globalIndex}, ${i})">ADICIONAR</button>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
         // --- RENDERIZAÇÃO E ENVIO DE AVALIAÇÕES ---
         function renderReviews() {
             const list = document.getElementById('dynamic-reviews');
-            // Inverte para mostrar as mais recentes primeiro
             const revReversed = [...reviewsDB].reverse();
             list.innerHTML = revReversed.map(r => `
                 <div class="review-card">
-                    <p>"${r.text}"</p>
-                    <div class="review-author">- ${r.author}, ${r.prov}</div>
+                    <p>"${escapeHTML(r.text)}"</p>
+                    <div class="review-author">- ${escapeHTML(r.author)}, ${r.mun ? escapeHTML(r.mun) + ' / ' : ''}${escapeHTML(r.prov)}</div>
                 </div>
             `).join('');
         }
@@ -866,32 +958,35 @@
             document.getElementById('overlay').style.display = 'block';
             document.getElementById('review-panel').style.display = 'block';
             if(currentUser) {
-                document.getElementById('rev-name').value = currentUser.name;
+                document.getElementById('rev-name').value = escapeHTML(currentUser.name);
             }
         }
 
         function submitReview() {
             const name = document.getElementById('rev-name').value.trim();
             const prov = document.getElementById('rev-prov').value;
+            const mun = document.getElementById('rev-municipality').value;
             const text = document.getElementById('rev-text').value.trim();
 
-            if(!name || !prov || !text) {
+            if(!name || !prov || !mun || !text) {
                 return alert("Por favor, preencha todos os campos para avaliar!");
             }
 
-            reviewsDB.push({ text, author: name, prov });
+            reviewsDB.push({ text, author: name, prov, mun });
             localStorage.setItem('frm_reviews', JSON.stringify(reviewsDB));
             
             alert("Muito obrigado pela sua avaliação!");
             
             document.getElementById('rev-text').value = '';
             document.getElementById('rev-prov').value = '';
+            document.getElementById('rev-municipality').innerHTML = '<option value="" disabled selected>Selecione primeiro a Província</option>';
             
             renderReviews();
             closePanels();
         }
 
         function addToCart(dbIndex, viewId) {
+            registerView(dbIndex); // Adicionar ao carrinho conta como visualização
             const product = db[dbIndex];
             const color = document.getElementById(`color-${viewId}`).value;
             const size = document.getElementById(`size-${viewId}`).value;
@@ -909,9 +1004,9 @@
             document.getElementById('overlay').style.display = 'block';
             document.getElementById('cart-panel').style.display = 'block';
             const list = document.getElementById('cart-items');
-            list.innerHTML = cart.map((item, idx) => `
+            list.innerHTML = cart.map((item) => `
                 <div style="display:flex; justify-content:space-between; margin:10px 0; font-size:0.8rem;">
-                    <span>${item.name} (${item.selectedColor} - ${item.selectedSize})</span>
+                    <span>${escapeHTML(item.name)} (${escapeHTML(item.selectedColor)} - ${escapeHTML(item.selectedSize)})</span>
                     <span>${item.price.toLocaleString()} Kz</span>
                 </div>
             `).join('');
@@ -923,19 +1018,22 @@
         function checkout() {
             const name = document.getElementById('cust-name').value;
             const prov = document.getElementById('cust-province').value;
+            const mun = document.getElementById('cust-municipality').value;
             const addr = document.getElementById('cust-address').value;
             const pay = document.getElementById('cust-payment').value;
 
-            if(!name || !prov || !addr || !pay || cart.length === 0) {
-                return alert("Por favor, preencha todos os dados (Província, Endereço, Método de Pagamento) e adicione itens no carrinho!");
+            if(!name || !prov || !mun || !addr || !pay || cart.length === 0) {
+                return alert("Por favor, preencha todos os dados de entrega (Província, Município, Endereço, Método) e adicione itens!");
             }
 
-            let msg = `*PEDIDO FRM BOUTIQUE*%0A*Cliente:* ${name}%0A*Província:* ${prov}%0A*Endereço:* ${addr}%0A%0A*Itens:*%0A`;
-            cart.forEach(i => msg += `- ${i.name} [${i.selectedColor}/${i.selectedSize}]%0A`);
+            // Uso de encodeURIComponent para evitar quebras no link do WhatsApp
+            let msg = `*PEDIDO FRM BOUTIQUE*%0A*Cliente:* ${encodeURIComponent(name)}%0A*Província:* ${encodeURIComponent(prov)}%0A*Município:* ${encodeURIComponent(mun)}%0A*Endereço:* ${encodeURIComponent(addr)}%0A%0A*Itens:*%0A`;
+            
+            cart.forEach(i => msg += `- ${encodeURIComponent(i.name)} [${encodeURIComponent(i.selectedColor)}/${encodeURIComponent(i.selectedSize)}]%0A`);
             const totalOrder = cart.reduce((s, i) => s + i.price, 0);
             
             msg += `%0A*TOTAL:* ${totalOrder.toLocaleString()} Kz`;
-            msg += `%0A*Método de Pagamento Escolhido:* ${pay}`;
+            msg += `%0A*Método de Pagamento Escolhido:* ${encodeURIComponent(pay)}`;
 
             if(currentUser) {
                 const orderDate = new Date().toLocaleString();
@@ -947,18 +1045,21 @@
                 localStorage.setItem('frm_history_' + currentUser.name, JSON.stringify(purchaseHistory));
             }
 
-            // Abertura do WhatsApp para o call center 941044772
             window.open(`https://wa.me/244941044772?text=${msg}`);
-            cart =[]; 
+            cart = []; 
             updateCartBadge(); 
             closePanels();
         }
 
         function openAdmin() {
             const pass = prompt("Senha Administrativa:");
-            if(pass === "felesema9") {
+            if(!pass) return;
+            // Segurança Básica Frontend: A senha está ofuscada em Base64 ("felesema9" = "ZmVsZXNlbWE5")
+            if(btoa(pass) === "ZmVsZXNlbWE5") {
                 document.getElementById('overlay').style.display = 'block';
                 document.getElementById('admin-panel').style.display = 'block';
+            } else {
+                alert("Acesso Negado.");
             }
         }
 
@@ -972,13 +1073,14 @@
             if(!n || !p) return alert("Erro nos campos!");
 
             db.push({
-                name: n, price: p, cat: c, sub: s, img: im || "https://via.placeholder.com/400",
+                name: escapeHTML(n), price: p, cat: escapeHTML(c), sub: escapeHTML(s), img: escapeHTML(im) || "https://via.placeholder.com/400",
                 options:["Padrão"], sizes: ["Único"]
             });
 
             localStorage.setItem('frm_master_db', JSON.stringify(db));
             alert("Produto Salvo!");
             renderProducts();
+            renderNav();
             closePanels();
         }
 
