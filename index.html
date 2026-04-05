@@ -865,6 +865,68 @@
     let currentPage = 1;
     const itemsPerPage = 12; // Mostra 12 de cada vez para economizar dados no Mobile
 
+    /* ==============================================================
+       FUNÇÕES FALTANTES (CORREÇÃO DOS ERROS)
+       ============================================================== */
+       
+    // 1. Preenche a lista de províncias ao carregar a página
+    function populateProvinces() {
+        const provinces = Object.keys(angolaLocations).sort();
+        const custProv = document.getElementById('cust-province');
+        const revProv = document.getElementById('rev-prov');
+
+        let options = '<option value="" disabled selected>Selecione a Província...</option>';
+        provinces.forEach(p => {
+            options += `<option value="${p}">${p}</option>`;
+        });
+
+        if(custProv) custProv.innerHTML = options;
+        if(revProv) {
+            revProv.innerHTML = '<option value="" disabled selected>De qual província nos avalia?</option>' + 
+                                provinces.map(p => `<option value="${p}">${p}</option>`).join('');
+        }
+    }
+
+    // 2. Atualiza os municípios com base na província selecionada
+    function updateMunicipalities(provSelectId, munSelectId) {
+        const provName = document.getElementById(provSelectId).value;
+        const munSelect = document.getElementById(munSelectId);
+        const municipalities = angolaLocations[provName] || [];
+
+        let options = '<option value="" disabled selected>Selecione o Município...</option>';
+        municipalities.forEach(m => {
+            options += `<option value="${m}">${m}</option>`;
+        });
+        munSelect.innerHTML = options;
+    }
+
+    // 3. Renderiza as avaliações salvas na tela
+    function renderReviews() {
+        const container = document.getElementById('dynamic-reviews');
+        if (reviewsDB.length === 0) {
+            container.innerHTML = "<p style='color:var(--text-dim); text-align:center; width:100%;'>Ainda não há avaliações. Seja o primeiro a avaliar!</p>";
+            return;
+        }
+        // Mostra as mais recentes primeiro
+        container.innerHTML = reviewsDB.slice().reverse().map(rev => `
+            <div class="review-card">
+                <p>"${sanitizeInput(rev.text)}"</p>
+                <span class="review-author">- ${sanitizeInput(rev.author)} <br><span style="font-size:0.75rem; color:var(--text-dim);">${sanitizeInput(rev.prov)} / ${sanitizeInput(rev.mun)}</span></span>
+            </div>
+        `).join('');
+    }
+
+    // 4. Abre o painel de avaliação e preenche o nome do usuário
+    function openReviewPanel() {
+        if (!currentUser) {
+            alert("Por favor, acesse a loja primeiro!");
+            return;
+        }
+        document.getElementById('overlay').style.display = 'block';
+        document.getElementById('review-panel').style.display = 'block';
+        document.getElementById('rev-name').value = sanitizeInput(currentUser.name);
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
         populateProvinces();
         checkAuth();
@@ -1050,71 +1112,81 @@
         document.getElementById('cart-total').innerText = cart.reduce((sum, item) => sum + item.price, 0).toLocaleString() + " Kz";
     }
 
-    function checkout() {
-        const name = sanitizeInput(document.getElementById('cust-name').value);
-        const prov = sanitizeInput(document.getElementById('cust-province').value);
-        const mun = sanitizeInput(document.getElementById('cust-municipality').value);
-        const pay = sanitizeInput(document.getElementById('cust-payment').value);
+       function checkout() {
+        // Pegamos os valores PUROS (sem sanitizeInput) para enviar corretamente ao WhatsApp
+        const name = document.getElementById('cust-name').value.trim();
+        const prov = document.getElementById('cust-province').value;
+        const mun = document.getElementById('cust-municipality').value;
+        const pay = document.getElementById('cust-payment').value;
         
         if(!name || !prov || !mun || !pay || cart.length === 0) {
             return alert("Preencha Província, Município, Pagamento e certifique-se de que tem itens no carrinho.");
         }
         
-        let msg = `*NOVA COMPRA - TUDO EM UM SÓ LUGAR*%0A%0A*Cliente:* ${encodeURIComponent(name)}%0A*Província:* ${encodeURIComponent(prov)}%0A*Município:* ${encodeURIComponent(mun)}%0A%0A*Itens:*%0A`;
-        cart.forEach(i => msg += `- ${encodeURIComponent(i.name)} [${encodeURIComponent(i.selectedColor)}/${encodeURIComponent(i.selectedSize)}] - ${i.price} Kz%0A`);
+        // Construção da mensagem pura usando \n para quebra de linha
+        let msgPlana = `*NOVA COMPRA - TUDO EM UM SÓ LUGAR*\n\n`;
+        msgPlana += `*Cliente:* ${name}\n`;
+        msgPlana += `*Província:* ${prov}\n`;
+        msgPlana += `*Município:* ${mun}\n\n`;
+        msgPlana += `*Itens:*\n`;
+        
+        cart.forEach(i => {
+            // Desfazemos a sanitização temporária apenas para a fatura no WhatsApp
+            const rawName = i.name.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+            const rawColor = i.selectedColor.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+            const rawSize = i.selectedSize.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+            
+            msgPlana += `- ${rawName} [${rawColor}/${rawSize}] - ${i.price} Kz\n`;
+        });
         
         const totalOrder = cart.reduce((s, i) => s + i.price, 0);
-        msg += `%0A*TOTAL:* ${totalOrder.toLocaleString()} Kz%0A*Método:* ${encodeURIComponent(pay)}`;
+        msgPlana += `\n*TOTAL:* ${totalOrder.toLocaleString()} Kz\n*Método:* ${pay}`;
 
+        // Salvar no histórico (aqui usamos os sanitizados que já estão no carrinho)
         if(currentUser) {
             purchaseHistory.push({ date: new Date().toLocaleString(), total: totalOrder, items: [...cart] });
             localStorage.setItem('frm_history_' + currentUser.name, JSON.stringify(purchaseHistory));
         }
 
-        window.open(`https://wa.me/244941044772?text=${msg}`, '_blank');
+        // O encodeURIComponent garante que emojis, espaços e quebras de linha funcionem no link wa.me
+        window.open(`https://wa.me/244941044772?text=${encodeURIComponent(msgPlana)}`, '_blank');
         cart = [];
         document.getElementById('cart-badge').innerText = 0;
         closePanels();
     }
 
     /* ==============================================================
-       7. AVALIAÇÕES E SISTEMA DE E-MAIL OFICIAL
+       7. AVALIAÇÕES E SISTEMA DE E-MAIL OFICIAL (CORRIGIDO)
        ============================================================== */
-    function renderReviews() {
-        document.getElementById('dynamic-reviews').innerHTML = [...reviewsDB].reverse().map(r => `
-            <div class="review-card">
-                <p>"${sanitizeInput(r.text)}"</p>
-                <div class="review-author">- ${sanitizeInput(r.author)}, ${r.mun ? sanitizeInput(r.mun) + ' / ' : ''}${sanitizeInput(r.prov)}</div>
-            </div>
-        `).join('');
-    }
-
-    function openReviewPanel() {
-        document.getElementById('overlay').style.display = 'block';
-        document.getElementById('review-panel').style.display = 'block';
-        if(currentUser) document.getElementById('rev-name').value = sanitizeInput(currentUser.name);
-    }
-
     function submitReview() {
-        const name = sanitizeInput(document.getElementById('rev-name').value.trim());
-        const prov = sanitizeInput(document.getElementById('rev-prov').value);
-        const mun = sanitizeInput(document.getElementById('rev-municipality').value);
-        const text = sanitizeInput(document.getElementById('rev-text').value.trim());
+        // Pegamos os valores PUROS para o envio do e-mail
+        const rawName = document.getElementById('rev-name').value.trim();
+        const rawProv = document.getElementById('rev-prov').value;
+        const rawMun = document.getElementById('rev-municipality').value;
+        const rawText = document.getElementById('rev-text').value.trim();
         
-        if(!name || !prov || !mun || !text) return alert("Por favor, preencha todos os campos para enviar a sugestão!");
+        if(!rawName || !rawProv || !rawMun || !rawText) return alert("Por favor, preencha todos os campos para enviar a sugestão!");
         
-        // 1. Salva no Site (Tempo Real)
-        reviewsDB.push({ text, author: name, prov, mun });
+        // 1. Salva no Site (Tempo Real) - Aqui SIM usamos o sanitizeInput para evitar ataques XSS na tela
+        const safeName = sanitizeInput(rawName);
+        const safeProv = sanitizeInput(rawProv);
+        const safeMun = sanitizeInput(rawMun);
+        const safeText = sanitizeInput(rawText);
+
+        reviewsDB.push({ text: safeText, author: safeName, prov: safeProv, mun: safeMun });
         localStorage.setItem('frm_reviews', JSON.stringify(reviewsDB));
         
-        // 2. Envia para o E-mail usando mailto seguro (sem expor credenciais de API públicas)
-        const emailBody = `Cliente: ${name}%0AProvíncia: ${prov} / Município: ${mun}%0A%0AMensagem:%0A${text}`;
-        const mailtoLink = `mailto:felixromeumarcosfrm@gmail.com?subject=Crítica/Sugestão - FRM BOUTIQUE&body=${emailBody}`;
+        // 2. Envia para o E-mail de forma 100% segura sem quebrar o link
+        const emailBody = `Cliente: ${rawName}\nProvíncia: ${rawProv} / Município: ${rawMun}\n\nMensagem:\n${rawText}`;
+        
+        // encodeURIComponent é OBRIGATÓRIO para variáveis dentro de um href/mailto
+        const mailtoLink = `mailto:felixromeumarcosfrm@gmail.com?subject=${encodeURIComponent("Crítica/Sugestão - FRM BOUTIQUE")}&body=${encodeURIComponent(emailBody)}`;
         
         window.location.href = mailtoLink; // Abre o app de e-mail do cliente
         
         alert("Avaliação publicada! O seu aplicativo de e-mail foi aberto para confirmar o envio à gerência.");
         
+        // Limpa o formulário
         document.getElementById('rev-text').value = '';
         document.getElementById('rev-prov').value = '';
         document.getElementById('rev-municipality').innerHTML = '<option value="" disabled selected>Município...</option>';
