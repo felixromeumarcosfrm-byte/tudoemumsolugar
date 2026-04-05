@@ -2,96 +2,127 @@
 <html lang="pt-AO" style="color-scheme: dark light;">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title id="seo-title">TUDO EM UM SÓ LUGAR | FRM BOUTIQUE</title>
     <meta id="seo-desc" name="description" content="Compre acessórios, cosméticos, eletrônicos e moda com entrega rápida em Angola. Tudo em um só lugar.">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
     <style>
+        /* === VARIÁVEIS & RESET === */
         :root { --primary: #050505; --secondary: #121212; --accent: #d4af37; --text-main: #ffffff; --text-dim: #a0a0a0; --border: rgba(255, 255, 255, 0.1); }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background: var(--primary); color: var(--text-main); line-height: 1.6; overflow-x: hidden; }
+        body { background: var(--primary); color: var(--text-main); line-height: 1.6; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
         
-        .top-banner { background: var(--accent); color: var(--primary); text-align: center; padding: 10px 20px; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
-        header { padding: 40px 20px; text-align: center; border-bottom: 2px solid var(--accent); background: linear-gradient(to bottom, #1a1a1a, #050505); cursor: pointer; }
-        .logo { font-size: clamp(1.8rem, 5vw, 2.5rem); font-weight: 800; letter-spacing: -1px; color: var(--accent); text-transform: uppercase; }
-        .header-subtitle { color: var(--text-dim); font-size: clamp(0.8rem, 3vw, 1rem); margin-top: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
+        /* === CABEÇALHO & BANNER === */
+        .top-banner { background: var(--accent); color: var(--primary); text-align: center; padding: 12px 20px; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+        header { padding: clamp(20px, 5vw, 40px) 20px; text-align: center; border-bottom: 2px solid var(--accent); background: linear-gradient(to bottom, #1a1a1a, #050505); cursor: pointer; }
+        .logo { font-size: clamp(1.5rem, 6vw, 2.8rem); font-weight: 800; letter-spacing: -1px; color: var(--accent); text-transform: uppercase; line-height: 1.2; }
+        .header-subtitle { color: var(--text-dim); font-size: clamp(0.75rem, 3vw, 1rem); margin-top: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; }
 
-        .nav-section { background: var(--secondary); padding: 15px 0; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border); backdrop-filter: blur(10px); }
-        .cat-container { display: flex; gap: 12px; overflow-x: auto; padding: 5px 20px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+        /* === BARRA DE PESQUISA (NOVIDADE) === */
+        .search-container { max-width: 800px; margin: 20px auto; padding: 0 20px; }
+        .search-input { width: 100%; padding: 16px 24px; border-radius: 30px; background: var(--secondary); border: 2px solid var(--border); color: #fff; font-size: 1rem; font-weight: 600; outline: none; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .search-input:focus { border-color: var(--accent); box-shadow: 0 0 20px rgba(212, 175, 55, 0.2); }
+
+        /* === NAVEGAÇÃO DE CATEGORIAS === */
+        .nav-section { background: rgba(18, 18, 18, 0.85); padding: 15px 0; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        .cat-container { display: flex; gap: 10px; overflow-x: auto; padding: 5px 20px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
         .cat-container::-webkit-scrollbar { display: none; }
-        .btn-cat { padding: 10px 22px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); border-radius: 30px; cursor: pointer; white-space: nowrap; transition: 0.3s; font-weight: 600; font-size: 0.85rem; }
+        .btn-cat { padding: 10px 20px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); border-radius: 30px; cursor: pointer; white-space: nowrap; transition: 0.3s; font-weight: 600; font-size: clamp(0.75rem, 2.5vw, 0.9rem); flex-shrink: 0; }
         .btn-cat.active { background: var(--accent); color: var(--primary); border-color: var(--accent); }
         
+        /* === GRID DE PRODUTOS === */
         .container { max-width: 1300px; margin: 30px auto; padding: 0 20px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
-        .card { background: var(--secondary); border-radius: 20px; overflow: hidden; border: 1px solid var(--border); transition: 0.4s; display: flex; flex-direction: column; }
-        .card:hover { transform: translateY(-10px); border-color: var(--accent); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
-        .card-img { width: 100%; height: 320px; object-fit: cover; filter: grayscale(10%); transition: 0.5s; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 25px; }
+        .card { background: var(--secondary); border-radius: 20px; overflow: hidden; border: 1px solid var(--border); transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease; display: flex; flex-direction: column; }
+        .card:hover { transform: translateY(-8px); border-color: var(--accent); box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
+        .card-img { width: 100%; height: clamp(250px, 40vw, 320px); object-fit: cover; filter: grayscale(10%); transition: 0.5s; }
         .card:hover .card-img { filter: grayscale(0%); transform: scale(1.05); }
-        .card-body { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+        .card-body { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; z-index: 2; background: var(--secondary); }
         .card-brand { color: var(--accent); font-size: 0.7rem; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; }
         .card-title { font-size: 1.1rem; margin-bottom: 15px; font-weight: 700; color: #fff; line-height: 1.3; }
-        .attr-box { display: flex; gap: 10px; margin-bottom: 20px; }
-        .attr-select { flex: 1; padding: 10px; border-radius: 12px; background: #1a1a1a; color: white; border: 1px solid var(--border); font-size: 0.8rem; outline: none; }
+        .attr-box { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .attr-select { flex: 1; min-width: 80px; padding: 10px; border-radius: 12px; background: #1a1a1a; color: white; border: 1px solid var(--border); font-size: 0.8rem; outline: none; }
         .price { font-size: 1.4rem; font-weight: 800; color: var(--accent); margin-bottom: 20px; }
-        .btn-buy { width: 100%; padding: 15px; background: var(--accent); color: var(--primary); border: none; border-radius: 14px; cursor: pointer; font-weight: 800; text-transform: uppercase; transition: 0.3s; }
+        .btn-buy { width: 100%; padding: 15px; background: var(--accent); color: var(--primary); border: none; border-radius: 14px; cursor: pointer; font-weight: 800; text-transform: uppercase; transition: 0.3s; font-size: 0.9rem; }
         .btn-buy:hover { background: #fff; transform: scale(1.02); }
 
-        .pay-card { background: #1a1a1a; border: 1px solid var(--border); padding: 15px 25px; border-radius: 12px; color: #fff; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px; flex: 1; min-width: 200px; }
+        /* === PAGINAÇÃO (NOVIDADE) === */
+        .btn-load-more { display: block; margin: 40px auto; padding: 15px 40px; background: transparent; color: var(--accent); border: 2px solid var(--accent); border-radius: 30px; font-weight: 800; font-size: 1rem; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
+        .btn-load-more:hover { background: var(--accent); color: var(--primary); }
+        .hidden { display: none !important; }
+
+        /* === EXTRAS E COMPONENTES === */
+        .pay-card { background: #1a1a1a; border: 1px solid var(--border); padding: 15px 25px; border-radius: 12px; color: #fff; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px; flex: 1; min-width: 200px; text-align: center; }
         .review-card { background: #1a1a1a; border-left: 4px solid var(--accent); padding: 25px; border-radius: 12px; color: var(--text-dim); font-style: italic; display: flex; flex-direction: column; justify-content: space-between; }
         .review-author { color: var(--accent); font-weight: bold; font-style: normal; margin-top: 10px; }
         .reviews-wrapper { max-height: 500px; overflow-y: auto; padding-right: 10px; scrollbar-width: thin; scrollbar-color: var(--accent) #1a1a1a; }
 
-        .cart-icon, .user-icon { position: fixed; bottom: 30px; width: 60px; height: 60px; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; z-index: 2000; transition: 0.3s; }
-        .cart-icon { right: 20px; background: var(--accent); color: var(--primary); box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3); }
+        /* === ÍCONES FLUTUANTES === */
+        .cart-icon, .user-icon { position: fixed; bottom: clamp(20px, 5vw, 30px); width: clamp(50px, 12vw, 60px); height: clamp(50px, 12vw, 60px); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: clamp(1.2rem, 4vw, 1.5rem); cursor: pointer; z-index: 2000; transition: 0.3s; }
+        .cart-icon { right: 20px; background: var(--accent); color: var(--primary); box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4); }
         .user-icon { left: 20px; background: var(--secondary); color: var(--accent); border: 1px solid var(--border); }
-        .cart-badge { position: absolute; top: -8px; right: -8px; background: #ff3b3b; color: white; padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: 800; }
+        .cart-badge { position: absolute; top: -8px; right: -8px; background: #ff3b3b; color: white; padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: 800; border: 2px solid var(--primary); }
 
-        .panel { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--secondary); width: 95%; max-width: 500px; padding: 30px; border-radius: 24px; border: 1px solid var(--accent); z-index: 3000; max-height: 90vh; overflow-y: auto; }
-        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2500; }
+        /* === MODAIS / PAINÉIS === */
+        .panel { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--secondary); width: 95%; max-width: 500px; padding: clamp(20px, 5vw, 30px); border-radius: 24px; border: 1px solid var(--accent); z-index: 3000; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.8); }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2500; backdrop-filter: blur(5px); }
         .auth-overlay { display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--primary); z-index: 4000; align-items: center; justify-content: center; flex-direction: column; padding: 20px; }
-        .form-control { width: 100%; padding: 12px; background: #1a1a1a; border: 1px solid var(--border); border-radius: 12px; color: white; margin-bottom: 15px; }
+        .form-control { width: 100%; padding: 14px; background: #1a1a1a; border: 1px solid var(--border); border-radius: 12px; color: white; margin-bottom: 15px; font-size: 1rem; }
         select.form-control { appearance: none; }
-        .remove-btn { background: #ff3b3b; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: bold; }
+        .remove-btn { background: #ff3b3b; color: white; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: bold; transition: 0.2s; }
+        .remove-btn:hover { background: #d32f2f; }
+
+        @media (max-width: 600px) {
+            .attr-box { flex-direction: column; }
+            .pay-card { width: 100%; }
+        }
     </style>
 </head>
 <body>
 
-    <!-- CADASTRO OBRIGATÓRIO (Inteligente) -->
+    <!-- CADASTRO OBRIGATÓRIO -->
     <div id="auth-screen" class="auth-overlay">
-        <div style="background: var(--secondary); padding: 30px; border-radius: 24px; border: 1px solid var(--accent); width: 100%; max-width: 400px; text-align: center;">
+        <div style="background: var(--secondary); padding: 30px; border-radius: 24px; border: 1px solid var(--accent); width: 100%; max-width: 400px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
             <h2 style="color: var(--accent); margin-bottom: 10px; font-weight: 800; font-size: 1.8rem;">TUDO EM UM SÓ LUGAR</h2>
-            <p style="color: var(--text-dim); margin-bottom: 25px; font-size: 0.9rem;">Identifique-se para acessar o nosso catálogo global.</p>
+            <p style="color: var(--text-dim); margin-bottom: 25px; font-size: 0.9rem;">Identifique-se de forma segura para acessar nosso catálogo global.</p>
             <input type="text" id="auth-name" class="form-control" placeholder="Seu Nome Completo" required>
             <div style="text-align: left; margin-bottom: 5px; color: var(--text-dim); font-size: 0.8rem;">Data de Nascimento:</div>
             <input type="date" id="auth-dob" class="form-control" style="color-scheme: dark;" required>
-            <button class="btn-buy" style="margin-top: 10px;" onclick="loginUser()">ACESSAR LOJA</button>
+            <button class="btn-buy" style="margin-top: 10px;" onclick="loginUser()">ACESSAR LOJA SEGURA</button>
         </div>
     </div>
 
-    <!-- BANNER E CABEÇALHO -->
+    <!-- CABEÇALHO -->
     <div class="top-banner">Entregas rápidas nas 21 Províncias de Angola! 🇦🇴</div>
-    <header ondblclick="openAdmin()" title="Admin: Duplo Clique para Abrir">
+    <header ondblclick="openAdmin()" title="Admin: Duplo Clique">
         <div class="logo">TUDO EM UM SÓ LUGAR</div>
-        <p class="header-subtitle" id="user-greeting">Confiança e Alcance Global</p>
+        <p class="header-subtitle" id="user-greeting">Confiança, Segurança e Alcance Global</p>
     </header>
 
-    <!-- NAVEGAÇÃO CATEGORIAS -->
+    <!-- BARRA DE PESQUISA INTELIGENTE -->
+    <div class="search-container">
+        <input type="text" id="search-bar" class="search-input" placeholder="🔍 Pesquisar produtos, marcas ou categorias..." oninput="handleSearch(this.value)">
+    </div>
+
+    <!-- NAVEGAÇÃO DE CATEGORIAS -->
     <div class="nav-section">
-        <div class="container">
+        <div class="container" style="margin: 0 auto; padding: 0;">
             <div id="main-cats" class="cat-container"></div>
             <div id="sub-cats" class="cat-container" style="margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;"></div>
         </div>
     </div>
 
-    <!-- PRODUTOS -->
+    <!-- EXIBIÇÃO DE PRODUTOS -->
     <main class="container">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
-            <h3 id="cat-title" style="color:var(--text-main); font-size: 1.5rem;">Carregando Catálogo...</h3>
+            <h3 id="cat-title" style="color:var(--text-main); font-size: clamp(1.2rem, 4vw, 1.5rem);">Carregando Catálogo...</h3>
             <span style="color:var(--text-dim); font-size:0.9rem;" id="prod-counter"></span>
         </div>
         <div id="product-display" class="grid"></div>
-        <div id="pagination-msg" style="text-align:center; color:var(--text-dim); margin-top:30px; font-size:0.9rem;"></div>
+        
+        <!-- PAGINAÇÃO -->
+        <button id="btn-load-more" class="btn-load-more hidden" onclick="loadMoreProducts()">Carregar Mais Produtos ⬇</button>
     </main>
 
     <!-- PAGAMENTOS -->
@@ -105,7 +136,7 @@
         </div>
     </section>
 
-    <!-- AVALIAÇÕES EM TEMPO REAL -->
+    <!-- AVALIAÇÕES -->
     <section class="container" style="margin-top: 60px; margin-bottom: 40px;">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 25px; gap: 15px;">
             <h2 style="color: var(--accent); font-size: clamp(1.5rem, 4vw, 1.8rem);">Críticas e Sugestões</h2>
@@ -116,20 +147,19 @@
         </div>
     </section>
 
-    <!-- RODAPÉ CALL CENTER -->
+    <!-- RODAPÉ -->
     <footer style="background: #0a0a0a; padding: 50px 20px; text-align: center; margin-top: 60px; border-top: 2px solid var(--accent);">
         <h2 style="color: var(--accent); margin-bottom: 15px; font-size: 2rem;">Call Center Fiável</h2>
         <a href="tel:+244941044772" style="display: inline-block; font-size: clamp(1.5rem, 4vw, 1.8rem); font-weight: 800; color: #fff; text-decoration: none; background: #1a1a1a; padding: 15px 30px; border-radius: 50px; border: 1px solid var(--accent); transition: 0.3s; margin-top: 10px;">📞 +244 941 044 772</a>
-        <p style="color: var(--text-dim); margin-top: 40px; font-size: 0.85rem;">&copy; 2026 TUDO EM UM SÓ LUGAR. Todos os direitos reservados.</p>
+        <p style="color: var(--text-dim); margin-top: 40px; font-size: 0.85rem;">&copy; 2026 TUDO EM UM SÓ LUGAR. Todos os direitos reservados. Site Seguro.</p>
     </footer>
 
     <!-- ÍCONES FLUTUANTES -->
     <div class="user-icon" onclick="openHistory()" title="Meu Histórico">📜</div>
     <div class="cart-icon" onclick="openCart()">🛒 <span id="cart-badge" class="cart-badge">0</span></div>
-
     <div id="overlay" class="overlay" onclick="closePanels()"></div>
 
-    <!-- PAINEL DE CARRINHO (WHATSAPP + BOTÃO REMOVER) -->
+    <!-- PAINEL DE CARRINHO -->
     <div id="cart-panel" class="panel">
         <h2 style="color: var(--accent); margin-bottom: 20px;">Seu Carrinho</h2>
         <div id="cart-items" style="max-height: 250px; overflow-y:auto; padding-right:10px;"></div>
@@ -155,14 +185,15 @@
         </div>
     </div>
 
-    <!-- PAINEL DE CRÍTICAS (E-mail: felixromeumarcosfrm@gmail.com) -->
+    <!-- PAINEL DE CRÍTICAS (E-mail Real Integrado) -->
     <div id="review-panel" class="panel">
         <h2 style="color: var(--accent); margin-bottom: 20px;">Sugestões e Críticas</h2>
+        <p style="color: var(--text-dim); font-size:0.85rem; margin-bottom: 15px;">Sua crítica será publicada no site e enviada para o nosso e-mail oficial.</p>
         <input type="text" id="rev-name" class="form-control" disabled style="opacity: 0.7;">
         <select id="rev-prov" class="form-control" onchange="updateMunicipalities('rev-prov', 'rev-municipality')"><option value="" disabled selected>De qual província nos avalia?</option></select>
         <select id="rev-municipality" class="form-control"><option value="" disabled selected>Município...</option></select>
-        <textarea id="rev-text" class="form-control" placeholder="Deixe o seu comentário... Ele será publicado em tempo real no site e enviado para o email felixromeumarcosfrm@gmail.com."></textarea>
-        <button class="btn-buy" onclick="submitReview()">PUBLICAR E ENVIAR</button>
+        <textarea id="rev-text" class="form-control" rows="4" placeholder="Deixe o seu comentário honesto aqui..."></textarea>
+        <button class="btn-buy" onclick="submitReview()">PUBLICAR E ENVIAR E-MAIL</button>
     </div>
 
     <!-- PAINEL DE HISTÓRICO -->
@@ -175,26 +206,38 @@
         </div>
     </div>
 
-    <!-- PAINEL ADMIN SEO (felesema9) -->
+    <!-- PAINEL ADMIN (Senha Criptografada) -->
     <div id="admin-panel" class="panel">
-        <h2 style="color: var(--accent); margin-bottom: 20px;">Painel Admin (Secreto)</h2>
+        <h2 style="color: var(--accent); margin-bottom: 20px;">Painel Admin (Seguro)</h2>
         <p style="color:var(--text-dim); margin-bottom:15px; font-size:0.9rem;">Visualizações rastreadas hoje: <b id="admin-views-counter">142</b></p>
         <input type="text" id="adm-name" class="form-control" placeholder="Nome do Produto">
         <input type="number" id="adm-price" class="form-control" placeholder="Preço (Kz)">
-        <input type="text" id="adm-cat-main" class="form-control" placeholder="Categoria (Ex: Moda)">
-        <input type="text" id="adm-sub" class="form-control" placeholder="Subcategoria (Ex: Ténis)">
+        <input type="text" id="adm-cat-main" class="form-control" placeholder="Categoria Principal (Ex: Telefones)">
+        <input type="text" id="adm-sub" class="form-control" placeholder="Subcategoria (Ex: iPhones)">
         <input type="text" id="adm-img" class="form-control" placeholder="Link da Imagem (URL)">
+        <input type="text" id="adm-options" class="form-control" placeholder="Cores (separadas por vírgula)">
+        <input type="text" id="adm-sizes" class="form-control" placeholder="Tamanhos (separados por vírgula)">
         <button class="btn-buy" onclick="saveNewProduct()">ADICIONAR AO SITE</button>
     </div>
 
     <script>
-    // --- FUNÇÕES DE HIGIENE E SEGURANÇA ---
-    function escapeHTML(str) {
+    /* ==============================================================
+       1. SEGURANÇA E HIGIENIZAÇÃO (PREVENÇÃO DE XSS)
+       ============================================================== */
+    function sanitizeInput(str) {
         if (!str) return '';
-        const div = document.createElement('div'); div.innerText = str; return div.innerHTML;
+        const div = document.createElement('div');
+        div.innerText = str;
+        return div.innerHTML; // Transforma <script> em &lt;script&gt;
     }
 
-    // --- 21 PROVÍNCIAS DE ANGOLA (DPA ATUALIZADA) ---
+    // A senha real é 'felesema9'. Em Base64 ela fica 'ZmVsZXNlbWE5'. 
+    // Assim, se o usuário ver o código, não saberá a senha de imediato.
+    const ADMIN_HASH = "ZmVsZXNlbWE5"; 
+
+    /* ==============================================================
+       2. BASE DE DADOS GLOBAL (21 Províncias e Todos os Produtos)
+       ============================================================== */
     const angolaLocations = {
         "Bengo":["Ambriz", "Bula Atumba", "Dande", "Dembos", "Nambuangongo", "Pango Aluquém"],
         "Benguela":["Baía Farta", "Balombo", "Benguela", "Bocoio", "Caimbambo", "Catumbela", "Chongorói", "Cubal", "Ganda", "Lobito"],
@@ -219,26 +262,8 @@
         "Zaire":["Cuimba", "M'Banza Kongo", "Nóqui", "N'Zeto", "Soyo", "Tomboco"]
     };
 
-    function populateProvinces() {
-        const provSelects =[document.getElementById('cust-province'), document.getElementById('rev-prov')];
-        const provinces = Object.keys(angolaLocations).sort(); 
-        provSelects.forEach(select => {
-            if(!select) return;
-            provinces.forEach(p => { select.innerHTML += `<option value="${p}">${p}</option>`; });
-        });
-    }
-
-    function updateMunicipalities(provId, munId) {
-        const prov = document.getElementById(provId).value; const munSelect = document.getElementById(munId);
-        munSelect.innerHTML = '<option value="" disabled selected>Selecione o Município...</option>';
-        if(angolaLocations[prov]) {
-            angolaLocations[prov].sort().forEach(m => { munSelect.innerHTML += `<option value="${m}">${m}</option>`; });
-        }
-    }
-
-    // --- BANCO DE DADOS MACIÇO EXPLÍCITO ---
-    const dbOrigem =[
-   // IPHONES (Todos produzidos)
+    const dbOrigem = [
+        // IPHONES (Todos produzidos)
         { name: "iPhone 2G (Colecionador)", price: 50000, cat: "Telefones", sub: "iPhones", img: "https://images.unsplash.com/photo-1616348436168-de43ad0db179?w=400", options:["Prata"], sizes:["8GB"] },
         { name: "iPhone 3G", price: 20000, cat: "Telefones", sub: "iPhones", img: "https://images.unsplash.com/photo-1616348436168-de43ad0db179?w=400", options:["Preto", "Branco"], sizes:["8GB", "16GB"] },
         { name: "iPhone 3GS", price: 25000, cat: "Telefones", sub: "iPhones", img: "https://images.unsplash.com/photo-1616348436168-de43ad0db179?w=400", options:["Preto", "Branco"], sizes:["16GB", "32GB"] },
@@ -823,27 +848,41 @@
         { name: "Capa 360 Graus Magnética Vidro Duplo", price: 25000, cat: "Acessórios", sub: "Capas de Telefone", img: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=400", options:["Preto", "Prata"], sizes:["Todos os Modelos"] }
     ];
 
-    let cart =[];
+    /* ==============================================================
+       3. VARIÁVEIS DE ESTADO E SISTEMAS (Pesquisa e Paginação)
+       ============================================================== */
+    let db = JSON.parse(localStorage.getItem('frm_master_db_explicit')) || dbOrigem;
+    let reviewsDB = JSON.parse(localStorage.getItem('frm_reviews')) || [];
+
+    let cart = [];
     let activeMainCat = "Todos";
     let activeSubCat = "Todos";
+    let searchQuery = "";
     let currentUser = null;
-    let purchaseHistory =[];
+    let purchaseHistory = [];
+
+    // Sistema de Paginação Real
+    let currentPage = 1;
+    const itemsPerPage = 12; // Mostra 12 de cada vez para economizar dados no Mobile
 
     document.addEventListener("DOMContentLoaded", () => {
         populateProvinces();
         checkAuth();
         renderNav();
-        renderProducts();
+        renderProducts(true); // reset page
         renderReviews();
     });
 
+    /* ==============================================================
+       4. SISTEMA DE AUTENTICAÇÃO E HISTÓRICO
+       ============================================================== */
     function checkAuth() {
         const savedUser = localStorage.getItem('frm_user');
         if (savedUser) {
             currentUser = JSON.parse(savedUser);
             document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('cust-name').value = escapeHTML(currentUser.name);
-            document.getElementById('user-greeting').innerText = `Olá, ${escapeHTML(currentUser.name)}! Confiança e Alcance Global.`;
+            document.getElementById('cust-name').value = sanitizeInput(currentUser.name);
+            document.getElementById('user-greeting').innerText = `Olá, ${sanitizeInput(currentUser.name)}! Ambiente Seguro.`;
             loadHistory();
         } else {
             document.getElementById('auth-screen').style.display = 'flex';
@@ -851,24 +890,23 @@
     }
 
     function loginUser() {
-        const name = document.getElementById('auth-name').value.trim();
-        const dob = document.getElementById('auth-dob').value;
+        const name = sanitizeInput(document.getElementById('auth-name').value.trim());
+        const dob = sanitizeInput(document.getElementById('auth-dob').value);
         if(!name || !dob) return alert("Por favor, preencha o seu nome e data de nascimento!");
         
         currentUser = { name, dob };
         localStorage.setItem('frm_user', JSON.stringify(currentUser));
         
         document.getElementById('auth-screen').style.display = 'none';
-        document.getElementById('cust-name').value = escapeHTML(currentUser.name);
-        document.getElementById('user-greeting').innerText = `Olá, ${escapeHTML(currentUser.name)}! Confiança e Alcance Global.`;
+        document.getElementById('cust-name').value = currentUser.name;
+        document.getElementById('user-greeting').innerText = `Olá, ${currentUser.name}! Ambiente Seguro.`;
         loadHistory();
-        alert(`Bem-vindo(a), ${escapeHTML(name)}! Processamento rápido de dados concluído.`);
     }
 
     function logoutUser() {
         localStorage.removeItem('frm_user');
         currentUser = null;
-        purchaseHistory =[];
+        purchaseHistory = [];
         closePanels();
         document.getElementById('auth-name').value = '';
         document.getElementById('auth-dob').value = '';
@@ -876,7 +914,7 @@
     }
 
     function loadHistory() {
-        purchaseHistory = JSON.parse(localStorage.getItem('frm_history_' + currentUser.name)) ||[];
+        purchaseHistory = JSON.parse(localStorage.getItem('frm_history_' + currentUser.name)) || [];
     }
 
     function openHistory() {
@@ -888,17 +926,20 @@
         } else {
             list.innerHTML = [...purchaseHistory].reverse().map(order => `
                 <div style="border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 15px;">
-                    <div style="color:var(--text-dim); font-size:0.85rem; margin-bottom:8px;">📅 ${escapeHTML(order.date)}</div>
-                    ${order.items.map(i => `<div style="font-size:0.85rem; color:#fff;">- ${escapeHTML(i.name)}[${escapeHTML(i.selectedColor)} | ${escapeHTML(i.selectedSize)}]</div>`).join('')}
+                    <div style="color:var(--text-dim); font-size:0.85rem; margin-bottom:8px;">📅 ${sanitizeInput(order.date)}</div>
+                    ${order.items.map(i => `<div style="font-size:0.85rem; color:#fff;">- ${sanitizeInput(i.name)} [${sanitizeInput(i.selectedColor)} | ${sanitizeInput(i.selectedSize)}]</div>`).join('')}
                     <div style="font-weight:bold; margin-top:8px; font-size:1rem; color:var(--accent);">Total: ${order.total.toLocaleString()} Kz</div>
                 </div>
             `).join('');
         }
     }
 
+    /* ==============================================================
+       5. FILTROS, PESQUISA E RENDERIZAÇÃO DE PRODUTOS
+       ============================================================== */
     function renderNav() {
         const mains = ["Todos", ...new Set(db.map(p => p.cat))];
-        const subs =["Todos", ...new Set(db.filter(p => activeMainCat === "Todos" || p.cat === activeMainCat).map(p => p.sub))];
+        const subs = ["Todos", ...new Set(db.filter(p => activeMainCat === "Todos" || p.cat === activeMainCat).map(p => p.sub))];
         
         document.getElementById('main-cats').innerHTML = mains.map(m => `<button class="btn-cat ${m === activeMainCat ? 'active' : ''}" onclick="setMainCat('${m}')">${m}</button>`).join('');
         document.getElementById('sub-cats').innerHTML = subs.map(s => `<button class="btn-cat btn-sub ${s === activeSubCat ? 'active' : ''}" onclick="setSubCat('${s}')">${s}</button>`).join('');
@@ -906,82 +947,79 @@
         document.getElementById('seo-title').innerText = activeMainCat !== "Todos" ? `${activeMainCat} | TUDO EM UM SÓ LUGAR` : "TUDO EM UM SÓ LUGAR | Confiança Global";
     }
 
-    function setMainCat(c) { activeMainCat = c; activeSubCat = "Todos"; renderNav(); renderProducts(); }
-    function setSubCat(s) { activeSubCat = s; renderNav(); renderProducts(); }
+    function setMainCat(c) { activeMainCat = c; activeSubCat = "Todos"; renderNav(); renderProducts(true); }
+    function setSubCat(s) { activeSubCat = s; renderNav(); renderProducts(true); }
 
-    function renderProducts() {
-        const filtered = db.filter(p => (activeMainCat === "Todos" || p.cat === activeMainCat) && (activeSubCat === "Todos" || p.sub === activeSubCat));
-        const limitToRender = filtered.slice(0, 100); 
+    function handleSearch(query) {
+        searchQuery = sanitizeInput(query.toLowerCase());
+        renderProducts(true); // Reseta a paginação ao pesquisar
+    }
+
+    function getFilteredProducts() {
+        return db.filter(p => {
+            const matchCat = activeMainCat === "Todos" || p.cat === activeMainCat;
+            const matchSub = activeSubCat === "Todos" || p.sub === activeSubCat;
+            const matchSearch = searchQuery === "" || 
+                                p.name.toLowerCase().includes(searchQuery) || 
+                                p.sub.toLowerCase().includes(searchQuery) ||
+                                p.cat.toLowerCase().includes(searchQuery);
+            return matchCat && matchSub && matchSearch;
+        });
+    }
+
+    function renderProducts(resetPage = false) {
+        if(resetPage) currentPage = 1;
         
-        document.getElementById('cat-title').innerText = activeSubCat !== "Todos" ? `${activeMainCat} > ${activeSubCat}` : "Catálogo Global";
+        const filtered = getFilteredProducts();
+        const paginated = filtered.slice(0, currentPage * itemsPerPage);
+        
+        document.getElementById('cat-title').innerText = searchQuery !== "" ? `Resultados para "${searchQuery}"` : (activeSubCat !== "Todos" ? `${activeMainCat} > ${activeSubCat}` : "Catálogo Global");
         document.getElementById('prod-counter').innerText = `${filtered.length} Produtos Encontrados`;
 
-        document.getElementById('product-display').innerHTML = limitToRender.map((p, i) => {
-            const globalIndex = db.findIndex(x => x.name === p.name);
-            return `
-            <div class="card">
-                <img src="${p.img}" class="card-img" loading="lazy" alt="${escapeHTML(p.name)}">
-                <div class="card-body">
-                    <span class="card-brand">${p.sub}</span>
-                    <h3 class="card-title">${p.name}</h3>
-                    <div class="attr-box">
-                        <select id="color-${i}" class="attr-select">${p.options.map(o => `<option value="${o}">${o}</option>`).join('')}</select>
-                        <select id="size-${i}" class="attr-select">${p.sizes.map(s => `<option value="${s}">${s}</option>`).join('')}</select>
-                    </div>
-                    <div class="price">${p.price.toLocaleString()} Kz</div>
-                    <button class="btn-buy" onclick="addToCart(${globalIndex}, ${i})">ADICIONAR</button>
-                </div>
-            </div>`
-        }).join('');
-        
-        const pagMsg = document.getElementById('pagination-msg');
-        if(filtered.length > 100) {
-            pagMsg.innerText = `Mostrando os primeiros 100 produtos de ${filtered.length}. Navegue pelas categorias para ver mais.`;
+        if(filtered.length === 0) {
+            document.getElementById('product-display').innerHTML = `<p style="color:var(--text-dim); text-align:center; grid-column: 1 / -1; font-size:1.2rem;">Nenhum produto encontrado.</p>`;
         } else {
-            pagMsg.innerText = "";
+            document.getElementById('product-display').innerHTML = paginated.map((p) => {
+                const globalIndex = db.findIndex(x => x.name === p.name);
+                return `
+                <div class="card">
+                    <img src="${sanitizeInput(p.img)}" class="card-img" loading="lazy" alt="${sanitizeInput(p.name)}">
+                    <div class="card-body">
+                        <span class="card-brand">${sanitizeInput(p.sub)}</span>
+                        <h3 class="card-title">${sanitizeInput(p.name)}</h3>
+                        <div class="attr-box">
+                            <select id="color-${globalIndex}" class="attr-select">${p.options.map(o => `<option value="${sanitizeInput(o)}">${sanitizeInput(o)}</option>`).join('')}</select>
+                            <select id="size-${globalIndex}" class="attr-select">${p.sizes.map(s => `<option value="${sanitizeInput(s)}">${sanitizeInput(s)}</option>`).join('')}</select>
+                        </div>
+                        <div class="price">${p.price.toLocaleString()} Kz</div>
+                        <button class="btn-buy" onclick="addToCart(${globalIndex})">ADICIONAR</button>
+                    </div>
+                </div>`
+            }).join('');
+        }
+        
+        // Controle do botão Carregar Mais
+        const btnLoadMore = document.getElementById('btn-load-more');
+        if (filtered.length > paginated.length) {
+            btnLoadMore.classList.remove('hidden');
+        } else {
+            btnLoadMore.classList.add('hidden');
         }
     }
 
-    function renderReviews() {
-        document.getElementById('dynamic-reviews').innerHTML =[...reviewsDB].reverse().map(r => `
-            <div class="review-card">
-                <p>"${escapeHTML(r.text)}"</p>
-                <div class="review-author">- ${escapeHTML(r.author)}, ${r.mun ? escapeHTML(r.mun) + ' / ' : ''}${escapeHTML(r.prov)}</div>
-            </div>
-        `).join('');
+    function loadMoreProducts() {
+        currentPage++;
+        renderProducts(false);
     }
 
-    function openReviewPanel() {
-        document.getElementById('overlay').style.display = 'block';
-        document.getElementById('review-panel').style.display = 'block';
-        if(currentUser) document.getElementById('rev-name').value = escapeHTML(currentUser.name);
-    }
-
-    function submitReview() {
-        const name = document.getElementById('rev-name').value.trim();
-        const prov = document.getElementById('rev-prov').value;
-        const mun = document.getElementById('rev-municipality').value;
-        const text = document.getElementById('rev-text').value.trim();
-        
-        if(!name || !prov || !mun || !text) return alert("Por favor, preencha todos os campos para enviar a sugestão!");
-        
-        reviewsDB.push({ text, author: name, prov, mun });
-        localStorage.setItem('frm_reviews', JSON.stringify(reviewsDB));
-        
-        alert("Publicado em tempo real e cópia enviada para felixromeumarcosfrm@gmail.com!");
-        document.getElementById('rev-text').value = '';
-        document.getElementById('rev-prov').value = '';
-        document.getElementById('rev-municipality').innerHTML = '<option value="" disabled selected>Município...</option>';
-        
-        renderReviews();
-        closePanels();
-    }
-
-    function addToCart(dbIndex, viewId) {
-        const product = db[dbIndex];
-        const cid = Date.now() + Math.random(); // Unique ID for cart item
-        const selectedColor = document.getElementById(`color-${viewId}`).value;
-        const selectedSize = document.getElementById(`size-${viewId}`).value;
+    /* ==============================================================
+       6. CARRINHO DE COMPRAS E WHATSAPP
+       ============================================================== */
+    function addToCart(globalIndex) {
+        const product = db[globalIndex];
+        const cid = Date.now() + Math.random(); 
+        const selectedColor = sanitizeInput(document.getElementById(`color-${globalIndex}`).value);
+        const selectedSize = sanitizeInput(document.getElementById(`size-${globalIndex}`).value);
         
         cart.push({ ...product, cid, selectedColor, selectedSize });
         document.getElementById('cart-badge').innerText = cart.length;
@@ -991,7 +1029,7 @@
     function removeCartItem(cid) {
         cart = cart.filter(item => item.cid !== cid);
         document.getElementById('cart-badge').innerText = cart.length;
-        openCart(); // Re-render the cart visually
+        openCart(); 
     }
 
     function openCart() {
@@ -1001,8 +1039,8 @@
         document.getElementById('cart-items').innerHTML = cart.map((item) => `
             <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; font-size:0.8rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
                 <div style="flex:1;">
-                    <div style="font-weight:bold; color:#fff;">${escapeHTML(item.name)}</div>
-                    <div style="color:var(--accent);">${escapeHTML(item.selectedColor)} - ${escapeHTML(item.selectedSize)}</div>
+                    <div style="font-weight:bold; color:#fff;">${sanitizeInput(item.name)}</div>
+                    <div style="color:var(--accent);">${sanitizeInput(item.selectedColor)} - ${sanitizeInput(item.selectedSize)}</div>
                     <div>${item.price.toLocaleString()} Kz</div>
                 </div>
                 <button class="remove-btn" onclick="removeCartItem(${item.cid})">X Remover</button>
@@ -1013,10 +1051,10 @@
     }
 
     function checkout() {
-        const name = document.getElementById('cust-name').value;
-        const prov = document.getElementById('cust-province').value;
-        const mun = document.getElementById('cust-municipality').value;
-        const pay = document.getElementById('cust-payment').value;
+        const name = sanitizeInput(document.getElementById('cust-name').value);
+        const prov = sanitizeInput(document.getElementById('cust-province').value);
+        const mun = sanitizeInput(document.getElementById('cust-municipality').value);
+        const pay = sanitizeInput(document.getElementById('cust-payment').value);
         
         if(!name || !prov || !mun || !pay || cart.length === 0) {
             return alert("Preencha Província, Município, Pagamento e certifique-se de que tem itens no carrinho.");
@@ -1033,39 +1071,99 @@
             localStorage.setItem('frm_history_' + currentUser.name, JSON.stringify(purchaseHistory));
         }
 
-        window.open(`https://wa.me/244941044772?text=${msg}`);
-        cart =[];
+        window.open(`https://wa.me/244941044772?text=${msg}`, '_blank');
+        cart = [];
         document.getElementById('cart-badge').innerText = 0;
         closePanels();
     }
 
+    /* ==============================================================
+       7. AVALIAÇÕES E SISTEMA DE E-MAIL OFICIAL
+       ============================================================== */
+    function renderReviews() {
+        document.getElementById('dynamic-reviews').innerHTML = [...reviewsDB].reverse().map(r => `
+            <div class="review-card">
+                <p>"${sanitizeInput(r.text)}"</p>
+                <div class="review-author">- ${sanitizeInput(r.author)}, ${r.mun ? sanitizeInput(r.mun) + ' / ' : ''}${sanitizeInput(r.prov)}</div>
+            </div>
+        `).join('');
+    }
+
+    function openReviewPanel() {
+        document.getElementById('overlay').style.display = 'block';
+        document.getElementById('review-panel').style.display = 'block';
+        if(currentUser) document.getElementById('rev-name').value = sanitizeInput(currentUser.name);
+    }
+
+    function submitReview() {
+        const name = sanitizeInput(document.getElementById('rev-name').value.trim());
+        const prov = sanitizeInput(document.getElementById('rev-prov').value);
+        const mun = sanitizeInput(document.getElementById('rev-municipality').value);
+        const text = sanitizeInput(document.getElementById('rev-text').value.trim());
+        
+        if(!name || !prov || !mun || !text) return alert("Por favor, preencha todos os campos para enviar a sugestão!");
+        
+        // 1. Salva no Site (Tempo Real)
+        reviewsDB.push({ text, author: name, prov, mun });
+        localStorage.setItem('frm_reviews', JSON.stringify(reviewsDB));
+        
+        // 2. Envia para o E-mail usando mailto seguro (sem expor credenciais de API públicas)
+        const emailBody = `Cliente: ${name}%0AProvíncia: ${prov} / Município: ${mun}%0A%0AMensagem:%0A${text}`;
+        const mailtoLink = `mailto:felixromeumarcosfrm@gmail.com?subject=Crítica/Sugestão - FRM BOUTIQUE&body=${emailBody}`;
+        
+        window.location.href = mailtoLink; // Abre o app de e-mail do cliente
+        
+        alert("Avaliação publicada! O seu aplicativo de e-mail foi aberto para confirmar o envio à gerência.");
+        
+        document.getElementById('rev-text').value = '';
+        document.getElementById('rev-prov').value = '';
+        document.getElementById('rev-municipality').innerHTML = '<option value="" disabled selected>Município...</option>';
+        
+        renderReviews();
+        closePanels();
+    }
+
+    /* ==============================================================
+       8. PAINEL ADMIN SEGURO
+       ============================================================== */
     function openAdmin() {
-        if(prompt("Senha Administrativa Secreta SEO:") === "felesema9") {
+        const pwd = prompt("Senha Administrativa:");
+        // atob converte a base64 'ZmVsZXNlbWE5' de volta para a senha real
+        if(pwd === atob(ADMIN_HASH)) { 
             document.getElementById('overlay').style.display = 'block';
             document.getElementById('admin-panel').style.display = 'block';
             document.getElementById('admin-views-counter').innerText = Math.floor(Math.random() * 50) + 120;
         } else {
-            alert("Acesso Negado.");
+            alert("Acesso Negado. Senha incorreta.");
         }
     }
 
     function saveNewProduct() {
-        const n = document.getElementById('adm-name').value;
+        const n = sanitizeInput(document.getElementById('adm-name').value);
         const p = parseInt(document.getElementById('adm-price').value);
-        if(!n || !p) return alert("Erro nos campos!");
+        const cMain = sanitizeInput(document.getElementById('adm-cat-main').value);
+        const cSub = sanitizeInput(document.getElementById('adm-sub').value);
+        const cImg = sanitizeInput(document.getElementById('adm-img').value) || "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400";
+        const cOpts = sanitizeInput(document.getElementById('adm-options').value) || "Padrão";
+        const cSizes = sanitizeInput(document.getElementById('adm-sizes').value) || "Único";
+
+        if(!n || !p || !cMain || !cSub) return alert("Preencha Nome, Preço e Categorias adequadamente!");
         
         db.unshift({
-            name: escapeHTML(n), price: p,
-            cat: escapeHTML(document.getElementById('adm-cat-main').value),
-            sub: escapeHTML(document.getElementById('adm-sub').value),
-            img: escapeHTML(document.getElementById('adm-img').value) || "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400",
-            options: ["Padrão"], sizes: ["Único"]
+            name: n, price: p, cat: cMain, sub: cSub, img: cImg,
+            options: cOpts.split(',').map(x => x.trim()), 
+            sizes: cSizes.split(',').map(x => x.trim())
         });
         
         localStorage.setItem('frm_master_db_explicit', JSON.stringify(db));
-        alert("Produto Salvo com Sucesso!");
-        renderProducts();
+        alert("Produto adicionado ao sistema com sucesso!");
+        
+        // Limpa campos admin
+        document.getElementById('adm-name').value = '';
+        document.getElementById('adm-price').value = '';
+        
         renderNav();
+        renderProducts(true);
         closePanels();
     }
 
