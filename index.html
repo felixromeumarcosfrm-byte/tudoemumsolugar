@@ -47,7 +47,7 @@
         .btn-buy { width: 100%; padding: 15px; background: var(--accent); color: var(--primary); border: none; border-radius: 14px; cursor: pointer; font-weight: 800; text-transform: uppercase; transition: 0.3s; font-size: 0.9rem; }
         .btn-buy:hover { background: #fff; transform: scale(1.02); }
 
-        /* === PAGINAÇÃO (NOVIDADE) === */
+        /* === PAGINAÇÃO === */
         .btn-load-more { display: block; margin: 40px auto; padding: 15px 40px; background: transparent; color: var(--accent); border: 2px solid var(--accent); border-radius: 30px; font-weight: 800; font-size: 1rem; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
         .btn-load-more:hover { background: var(--accent); color: var(--primary); }
         .hidden { display: none !important; }
@@ -185,7 +185,7 @@
         </div>
     </div>
 
-    <!-- PAINEL DE CRÍTICAS (E-mail Real Integrado) -->
+    <!-- PAINEL DE CRÍTICAS -->
     <div id="review-panel" class="panel">
         <h2 style="color: var(--accent); margin-bottom: 20px;">Sugestões e Críticas</h2>
         <p style="color: var(--text-dim); font-size:0.85rem; margin-bottom: 15px;">Sua crítica será publicada no site e enviada para o nosso e-mail oficial.</p>
@@ -206,33 +206,43 @@
         </div>
     </div>
 
-    <!-- PAINEL ADMIN (Senha Criptografada) -->
+    <!-- PAINEL ADMIN (Adicionar & Editar Imagem) -->
     <div id="admin-panel" class="panel">
         <h2 style="color: var(--accent); margin-bottom: 20px;">Painel Admin (Seguro)</h2>
         <p style="color:var(--text-dim); margin-bottom:15px; font-size:0.9rem;">Visualizações rastreadas hoje: <b id="admin-views-counter">142</b></p>
+        
+        <!-- Adicionar Produto -->
+        <h3 style="color: white; font-size: 1rem; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 5px;">+ Adicionar Novo Produto</h3>
         <input type="text" id="adm-name" class="form-control" placeholder="Nome do Produto">
         <input type="number" id="adm-price" class="form-control" placeholder="Preço (Kz)">
         <input type="text" id="adm-cat-main" class="form-control" placeholder="Categoria Principal (Ex: Telefones)">
         <input type="text" id="adm-sub" class="form-control" placeholder="Subcategoria (Ex: iPhones)">
         <input type="text" id="adm-img" class="form-control" placeholder="Link da Imagem (URL)">
         <input type="text" id="adm-options" class="form-control" placeholder="Cores (separadas por vírgula)">
-        <input type="text" id="adm-sizes" class="form-control" placeholder="Tamanhos (separados por vírgula)">
-        <button class="btn-buy" onclick="saveNewProduct()">ADICIONAR AO SITE</button>
+        <input type="text" id="adm-sizes" class="form-control" placeholder="Tamanhos (separadas por vírgula)">
+        <button class="btn-buy" onclick="saveNewProduct()" style="margin-bottom: 20px;">ADICIONAR AO SITE</button>
+
+        <!-- Editar Imagem de Produto Existente (NOVIDADE) -->
+        <h3 style="color: white; font-size: 1rem; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 5px; margin-top: 10px;">✏️ Alterar Imagem de Produto</h3>
+        <p style="color:var(--text-dim); font-size:0.8rem; margin-bottom: 10px;">Digite o nome exato do produto que já existe para trocar apenas a sua foto.</p>
+        <input type="text" id="adm-edit-name" class="form-control" placeholder="Nome Exato do Produto">
+        <input type="text" id="adm-edit-img" class="form-control" placeholder="Novo Link da Imagem (URL)">
+        <button class="btn-buy" onclick="updateProductImage()" style="background: transparent; border: 1px solid var(--accent); color: var(--accent);">ATUALIZAR IMAGEM</button>
     </div>
 
     <script>
+
     /* ==============================================================
-       1. SEGURANÇA E HIGIENIZAÇÃO (PREVENÇÃO DE XSS)
+       1. SEGURANÇA E HIGIENIZAÇÃO RÁPIDA (PREVENÇÃO XSS SEM TRAVAR)
        ============================================================== */
     function sanitizeInput(str) {
-        if (!str) return '';
-        const div = document.createElement('div');
-        div.innerText = str;
-        return div.innerHTML; // Transforma <script> em &lt;script&gt;
+        if (!str || typeof str !== 'string') return str;
+        // OTIMIZAÇÃO: Regex não força a criação de elementos DOM, logo o site nunca vai travar!
+        return str.replace(/[&<>"']/g, function(m) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+        });
     }
 
-    // A senha real é 'felesema9'. Em Base64 ela fica 'ZmVsZXNlbWE5'. 
-    // Assim, se o usuário ver o código, não saberá a senha de imediato.
     const ADMIN_HASH = "ZmVsZXNlbWE5"; 
 
     /* ==============================================================
@@ -424,57 +434,56 @@
         { name: "Energizer Hardcase", price: 22000, cat: "Telefones", sub: "Botões", img: "https://images.unsplash.com/photo-1558864559-ed673ba3610b?w=400", options:["Preto/Amarelo"], sizes:["Padrão"] },
 
         // DESPORTO - PREMIER LEAGUE
-        // DESPORTO - PREMIER LEAGUE
-        { name: "T-shirt Arsenal FC", price: 35000, cat: "Desporto", sub: "Premier League", img: "https://assets.adidas.com/images/w_600,f_auto,q_auto/23ab26a760de477aa260af9900ee12ee_9366/Camisola_Principal_23-24_do_Arsenal_Vermelho_HR6929_01_laydown.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
-        { name: "T-shirt Manchester City", price: 35000, cat: "Desporto", sub: "Premier League", img: "https://images.puma.com/image/upload/f_auto,q_auto,b_rgb:fafafa,w_600,h_600/global/770438/01/fnd/PNA/fmt/png", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
-        { name: "T-shirt Manchester United", price: 35000, cat: "Desporto", sub: "Premier League", img: "https://assets.adidas.com/images/w_600,f_auto,q_auto/c20ccb53b8f24b22baf7af6800ec41c0_9366/Camisola_Principal_23-24_do_Manchester_United_Vermelho_IP1726_01_laydown.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt Arsenal FC", price: 35000, cat: "Desporto", sub: "Premier League", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595348/Arsenal_26-27_Home_Kit_Leaked_-_4_New_Images_5_gzsuyi.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt Manchester City", price: 35000, cat: "Desporto", sub: "Premier League", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595339/mc-26-27-home-kit_1_djg0bd.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt Manchester United", price: 35000, cat: "Desporto", sub: "Premier League", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595339/D7759ZLRrfu1XBZ-small_kzqoqn.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
         { name: "T-shirt Chelsea FC", price: 35000, cat: "Desporto", sub: "Premier League", img: "https://static.nike.com/a/images/t_default/4e963b65-6839-4dd3-ae4c-bb5fc2a57262/chelsea-fc-2023-24-stadium-home-mens-nike-dri-fit-soccer-replica-jersey-gZ62tG.png", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
-        { name: "T-shirt Liverpool FC", price: 35000, cat: "Desporto", sub: "Premier League", img: "https://static.nike.com/a/images/t_default/8b8e05a5-9bb2-4011-aa95-f12a149fb9a8/liverpool-fc-2023-24-stadium-home-mens-nike-dri-fit-soccer-replica-jersey-4zpm08.png", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
-        { name: "T-shirt Tottenham Hotspur", price: 35000, cat: "Desporto", sub: "Premier League", img: "https://static.nike.com/a/images/t_default/0e43df35-18ad-48b4-8461-12c8ff81e05a/tottenham-hotspur-2023-24-stadium-home-mens-nike-dri-fit-soccer-replica-jersey-0mrxW9.png", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
-        { name: "T-shirt Newcastle United", price: 35000, cat: "Desporto", sub: "Premier League", img: "https://assets.adidas.com/images/w_600,f_auto,q_auto/8876a44bf0664dbb8a07f30df4b2d184_9366/Newcastle_United_24-25_Home_Jersey_White_IX4006_01_laydown.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
-        { name: "T-shirt Aston Villa", price: 35000, cat: "Desporto", sub: "Premier League", img: "https://assets.adidas.com/images/w_600,f_auto,q_auto/01e9389f5bc34f31952e46b3dc2bdcd1_9366/Aston_Villa_24-25_Home_Jersey_Red_JI4080_01_laydown.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
-        { name: "T-shirt West Ham", price: 35000, cat: "Desporto", sub: "Premier League", img: "https://image.pollinations.ai/prompt/Real%20photo%20of%20West%20Ham%20football%20jersey%20shirt%20front%20view%20white%20background?width=400&height=400", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
-        { name: "T-shirt Everton", price: 35000, cat: "Desporto", sub: "Premier League", img: "https://image.pollinations.ai/prompt/Real%20photo%20of%20Everton%20football%20jersey%20shirt%20front%20view%20white%20background?width=400&height=400", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt Liverpool FC", price: 35000, cat: "Desporto", sub: "Premier League", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595344/kcDtQrx1UfVnibv-small_hkdnif.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt Tottenham Hotspur", price: 35000, cat: "Desporto", sub: "Premier League", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595336/ulEZtxAJozmo1j5-small_ojgswk.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt Newcastle United", price: 35000, cat: "Desporto", sub: "Premier League", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595339/Newcastle_United_26-27_Home_Kit_Leaked_2_qpx409.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt Aston Villa", price: 35000, cat: "Desporto", sub: "Premier League", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595348/Aston_Villa_26-27_Third_Kit_Leaked_1_upgud8.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt West Ham", price: 35000, cat: "Desporto", sub: "Premier League", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595336/yqkFgKPTnE2kHpY-small_ojgw1a.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt Everton", price: 35000, cat: "Desporto", sub: "Premier League", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595347/NHEJvpsYXD0iSm3-small_x0vkqk.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
 
         // DESPORTO - LA LIGA
-        { name: "T-shirt Real Madrid", price: 35000, cat: "Desporto", sub: "La Liga", img: "https://assets.adidas.com/images/w_600,f_auto,q_auto/1a0b368ca3e34b7fbf9caeb000ed25ec_9366/Camisola_Principal_22-23_do_Real_Madrid_Branco_HF0291_01_laydown.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
-        { name: "T-shirt FC Barcelona", price: 35000, cat: "Desporto", sub: "La Liga", img: "https://static.nike.com/a/images/t_default/2eaee098-b6df-47ec-aa6a-609801127027/fc-barcelona-2023-24-stadium-home-mens-nike-dri-fit-soccer-replica-jersey-mPtc0p.png", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
-        { name: "T-shirt Atletico Madrid", price: 35000, cat: "Desporto", sub: "La Liga", img: "https://static.nike.com/a/images/t_default/61a6b0c2-df38-4e89-be40-7e3e9112fb94/atletico-madrid-2023-24-stadium-home-mens-nike-dri-fit-soccer-replica-jersey-fH1dRM.png", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
-        { name: "T-shirt Sevilla FC", price: 35000, cat: "Desporto", sub: "La Liga", img: "https://image.pollinations.ai/prompt/Real%20photo%20of%20Sevilla%20FC%20football%20jersey%20shirt%20front%20view%20white%20background?width=400&height=400", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
-        { name: "T-shirt Valencia CF", price: 35000, cat: "Desporto", sub: "La Liga", img: "https://images.puma.com/image/upload/f_auto,q_auto,b_rgb:fafafa,w_600,h_600/global/773266/01/fnd/PNA/fmt/png", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
-        { name: "T-shirt Real Betis", price: 35000, cat: "Desporto", sub: "La Liga", img: "https://image.pollinations.ai/prompt/Real%20photo%20of%20Real%20Betis%20football%20jersey%20shirt%20front%20view%20white%20background?width=400&height=400", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
-        { name: "T-shirt Athletic Bilbao", price: 35000, cat: "Desporto", sub: "La Liga", img: "https://image.pollinations.ai/prompt/Real%20photo%20of%20Athletic%20Bilbao%20football%20jersey%20shirt%20front%20view%20white%20background?width=400&height=400", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
-        { name: "T-shirt Real Sociedad", price: 35000, cat: "Desporto", sub: "La Liga", img: "https://image.pollinations.ai/prompt/Real%20photo%20of%20Real%20Sociedad%20football%20jersey%20shirt%20front%20view%20white%20background?width=400&height=400", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
-        { name: "T-shirt Villarreal CF", price: 35000, cat: "Desporto", sub: "La Liga", img: "https://image.pollinations.ai/prompt/Real%20photo%20of%20Villarreal%20CF%20football%20jersey%20shirt%20front%20view%20white%20background?width=400&height=400", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
-        { name: "T-shirt Celta de Vigo", price: 35000, cat: "Desporto", sub: "La Liga", img: "https://image.pollinations.ai/prompt/Real%20photo%20of%20Celta%20de%20Vigo%20football%20jersey%20shirt%20front%20view%20white%20background?width=400&height=400", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt Real Madrid", price: 35000, cat: "Desporto", sub: "La Liga", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595298/real_z4zi6f.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt FC Barcelona", price: 35000, cat: "Desporto", sub: "La Liga", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595299/bar%C3%A7a_ll4fhw.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt Atletico Madrid", price: 35000, cat: "Desporto", sub: "La Liga", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595298/atliteco_kdvdxj.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt Sevilla FC", price: 35000, cat: "Desporto", sub: "La Liga", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595329/6XGs81dtciEFW2q-small_giywbi.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt Valencia CF", price: 35000, cat: "Desporto", sub: "La Liga", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595323/qq2C9hdppY5UQOY-small_i575la.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt Real Betis", price: 35000, cat: "Desporto", sub: "La Liga", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595335/betis-25-26-home-kit_9_cygha8.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt Athletic Bilbao", price: 35000, cat: "Desporto", sub: "La Liga", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595335/jqRaCqK0c6CGkS3-small_mjecmb.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt Real Sociedad", price: 35000, cat: "Desporto", sub: "La Liga", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595328/uXxfonII3XHqrQQ-small_qyhvvj.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt Villarreal CF", price: 35000, cat: "Desporto", sub: "La Liga", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595325/PMMBooeAcZXguSY-small_v7ttsj.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt Celta de Vigo", price: 35000, cat: "Desporto", sub: "La Liga", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595329/6XGs81dtciEFW2q-small_giywbi.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
 
         // DESPORTO - BUNDESLIGA
-        { name: "T-shirt Bayern Munich", price: 35000, cat: "Desporto", sub: "Bundesliga", img: "https://assets.adidas.com/images/w_600,f_auto,q_auto/70bbdbdf8cde4baeb4c8af7200eb3bf0_9366/Camisola_Principal_23-24_do_FC_Bayern_Branco_IJ7442_01_laydown.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
-        { name: "T-shirt Borussia Dortmund", price: 35000, cat: "Desporto", sub: "Bundesliga", img: "https://images.puma.com/image/upload/f_auto,q_auto,b_rgb:fafafa,w_600,h_600/global/770604/01/fnd/PNA/fmt/png", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
-        { name: "T-shirt RB Leipzig", price: 35000, cat: "Desporto", sub: "Bundesliga", img: "https://static.nike.com/a/images/t_default/fb77e57c-f2dd-4ed0-94f4-5f50ef77fc7d/rb-leipzig-2023-24-stadium-home-mens-nike-dri-fit-soccer-replica-jersey-5g1jR0.png", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
-        { name: "T-shirt Bayer Leverkusen", price: 35000, cat: "Desporto", sub: "Bundesliga", img: "https://image.pollinations.ai/prompt/Real%20photo%20of%20Bayer%20Leverkusen%20football%20jersey%20shirt%20front%20view%20white%20background?width=400&height=400", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt Bayern Munich", price: 35000, cat: "Desporto", sub: "Bundesliga", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595314/Bayern_M%C3%BCnchen_26-27_Away_Kit_Leaked_3_psujvt.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt Borussia Dortmund", price: 35000, cat: "Desporto", sub: "Bundesliga", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595310/Ksos2OmkiedCYi1-small_gir57g.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt RB Leipzig", price: 35000, cat: "Desporto", sub: "Bundesliga", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595309/RB_Leipzig_26-27_Home_Kit_Design_Leaked_2_mtamm4.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt Bayer Leverkusen", price: 35000, cat: "Desporto", sub: "Bundesliga", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595314/bayer-04-home-kit_12_ulbtqy.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
 
         // DESPORTO - SERIE A
-        { name: "T-shirt Juventus", price: 35000, cat: "Desporto", sub: "Serie A", img: "https://assets.adidas.com/images/w_600,f_auto,q_auto/6ecdbb889eb248e3a242af6800ecc1d6_9366/Camisola_Principal_23-24_da_Juventus_Preto_HR8256_01_laydown.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
-        { name: "T-shirt AC Milan", price: 35000, cat: "Desporto", sub: "Serie A", img: "https://images.puma.com/image/upload/f_auto,q_auto,b_rgb:fafafa,w_600,h_600/global/770383/01/fnd/PNA/fmt/png", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
-        { name: "T-shirt Inter Milan", price: 35000, cat: "Desporto", sub: "Serie A", img: "https://static.nike.com/a/images/t_default/95f87b64-d6a0-4592-8dbf-c0c5afb0d1e2/inter-milan-2023-24-stadium-home-mens-nike-dri-fit-soccer-replica-jersey-XfPq72.png", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
-        { name: "T-shirt Napoli", price: 35000, cat: "Desporto", sub: "Serie A", img: "https://image.pollinations.ai/prompt/Real%20photo%20of%20Napoli%20football%20jersey%20shirt%20front%20view%20white%20background?width=400&height=400", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
-        { name: "T-shirt AS Roma", price: 35000, cat: "Desporto", sub: "Serie A", img: "https://assets.adidas.com/images/w_600,f_auto,q_auto/58c381c853fa43dfbf3d132cbcc730a9_9366/AS_Roma_24-25_Home_Jersey_Red_IX1005_01_laydown.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt Juventus", price: 35000, cat: "Desporto", sub: "Serie A", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595315/PDXd1jWdsN1ewWd-small_nqyq0o.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt AC Milan", price: 35000, cat: "Desporto", sub: "Serie A", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595315/PDXd1jWdsN1ewWd-small_nqyq0o.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt Inter Milan", price: 35000, cat: "Desporto", sub: "Serie A", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595322/CL5HHrDsowVmWjV-small_s7ebns.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt Napoli", price: 35000, cat: "Desporto", sub: "Serie A", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595315/TWTT1D6ouryQY4L-small_gu7q3u.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt AS Roma", price: 35000, cat: "Desporto", sub: "Serie A", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595287/Camisola_Principal_25-26_da_AS_Roma_Bordo_JP4184_23_hover_model_i4qa2o.avif", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
 
         // DESPORTO - LIGUE 1
-        { name: "T-shirt PSG", price: 35000, cat: "Desporto", sub: "Ligue 1", img: "https://static.nike.com/a/images/t_default/a1fbcd1d-6169-42b7-84e9-e090df4a3b7c/paris-saint-germain-2023-24-stadium-home-mens-nike-dri-fit-soccer-replica-jersey-vPjP3r.png", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
-        { name: "T-shirt Olympique Marseille", price: 35000, cat: "Desporto", sub: "Ligue 1", img: "https://images.puma.com/image/upload/f_auto,q_auto,b_rgb:fafafa,w_600,h_600/global/770402/01/fnd/PNA/fmt/png", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
-        { name: "T-shirt Olympique Lyonnais", price: 35000, cat: "Desporto", sub: "Ligue 1", img: "https://assets.adidas.com/images/w_600,f_auto,q_auto/35abf9b972e249f6b9c9af6f00db1a68_9366/Camisola_Principal_23-24_do_Olympique_Lyonnais_Branco_HZ1558_01_laydown.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
-        { name: "T-shirt AS Monaco", price: 35000, cat: "Desporto", sub: "Ligue 1", img: "https://image.pollinations.ai/prompt/Real%20photo%20of%20AS%20Monaco%20football%20jersey%20shirt%20front%20view%20white%20background?width=400&height=400", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt PSG", price: 35000, cat: "Desporto", sub: "Ligue 1", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595308/psg_26_27_kit_s8efgt.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt Olympique Marseille", price: 35000, cat: "Desporto", sub: "Ligue 1", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595308/marseille_26_27_third_kit_2_evdyfo.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt Olympique Lyonnais", price: 35000, cat: "Desporto", sub: "Ligue 1", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595309/lyon-26-27-third-kit_1_yjmiv3.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt AS Monaco", price: 35000, cat: "Desporto", sub: "Ligue 1", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595309/as-monaco-25-26-home-kit_12_yqz8z3.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
 
         // DESPORTO - EREDIVISIE & LIGA NOS
-        { name: "T-shirt Ajax Amsterdam", price: 35000, cat: "Desporto", sub: "Eredivisie", img: "https://assets.adidas.com/images/w_600,f_auto,q_auto/157d6b38c2dc40d7afcd4f7b6058e57f_9366/Ajax_Amsterdam_24-25_Home_Jersey_White_IX4727_01_laydown.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
-        { name: "T-shirt PSV", price: 35000, cat: "Desporto", sub: "Eredivisie", img: "https://images.puma.com/image/upload/f_auto,q_auto,b_rgb:fafafa,w_600,h_600/global/770659/01/fnd/PNA/fmt/png", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
-        { name: "T-shirt SL Benfica", price: 35000, cat: "Desporto", sub: "Liga NOS", img: "https://assets.adidas.com/images/w_600,f_auto,q_auto/8b48fdf8cd34479bad27af2c01192e4d_9366/Camisola_Principal_23-24_do_Benfica_Vermelho_HS5014_01_laydown.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
-        { name: "T-shirt FC Porto", price: 35000, cat: "Desporto", sub: "Liga NOS", img: "https://image.pollinations.ai/prompt/Real%20photo%20of%20FC%20Porto%20football%20jersey%20shirt%20front%20view%20white%20background?width=400&height=400", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
-        { name: "T-shirt Sporting CP", price: 35000, cat: "Desporto", sub: "Liga NOS", img: "https://image.pollinations.ai/prompt/Real%20photo%20of%20Sporting%20CP%20football%20jersey%20shirt%20front%20view%20white%20background?width=400&height=400", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] }
-]
-        // MODA MASCULINA - FATOS CORPORATIVOS E SOCIAIS (>10 itens)
+        { name: "T-shirt Ajax Amsterdam", price: 35000, cat: "Desporto", sub: "Eredivisie", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595303/transferir_2_txakva.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt PSV", price: 35000, cat: "Desporto", sub: "Eredivisie", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595300/transferir_3_h5so9n.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt SL Benfica", price: 35000, cat: "Desporto", sub: "Liga NOS", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595350/Benfica_26-27_Home_Kit_Info_Leaked_1_ijsrf8.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt FC Porto", price: 35000, cat: "Desporto", sub: "Liga NOS", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595350/IvOiwWi5WvN8d26-small_oyxpn0.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt Sporting CP", price: 35000, cat: "Desporto", sub: "Liga NOS", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595348/YDplbbC5b4cwCA9-small_rnjfmi.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
+
+        // MODA MASCULINA - FATOS CORPORATIVOS E SOCIAIS 
         { name: "Fato Corporativo Azul Marinho", price: 85000, cat: "Moda Masculina", sub: "Fatos Corporativos", img: "https://images.unsplash.com/photo-1594938298598-7c90dd7e2686?w=400", options:["Azul Marinho"], sizes:["46", "48", "50", "52", "54"] },
         { name: "Fato Corporativo Preto Luxo", price: 95000, cat: "Moda Masculina", sub: "Fatos Corporativos", img: "https://images.unsplash.com/photo-1594938298598-7c90dd7e2686?w=400", options:["Preto"], sizes:["46", "48", "50", "52", "54"] },
         { name: "Fato Corporativo Cinza", price: 80000, cat: "Moda Masculina", sub: "Fatos Corporativos", img: "https://images.unsplash.com/photo-1594938298598-7c90dd7e2686?w=400", options:["Cinza Claro", "Cinza Escuro"], sizes:["46", "48", "50", "52", "54"] },
@@ -1238,6 +1247,32 @@
         renderNav();
         renderProducts(true);
         closePanels();
+    }
+
+    function updateProductImage() {
+        const exactName = sanitizeInput(document.getElementById('adm-edit-name').value.trim());
+        const newImg = sanitizeInput(document.getElementById('adm-edit-img').value.trim());
+
+        if(!exactName || !newImg) return alert("Preencha o nome exato e o novo link da imagem!");
+
+        // Procura o produto (ignorando maiúsculas e minúsculas)
+        const productIndex = db.findIndex(p => p.name.toLowerCase() === exactName.toLowerCase());
+
+        if(productIndex === -1) {
+            return alert("Produto não encontrado! Verifique se digitou o nome corretamente.");
+        }
+
+        // Atualiza a imagem e salva
+        db[productIndex].img = newImg;
+        localStorage.setItem('frm_master_db_explicit', JSON.stringify(db));
+        
+        alert(`A imagem de "${db[productIndex].name}" foi atualizada com sucesso!`);
+        
+        // Limpa os campos
+        document.getElementById('adm-edit-name').value = '';
+        document.getElementById('adm-edit-img').value = '';
+        
+        renderProducts(false); // Atualiza a tela sem voltar para a página 1
     }
 
     function closePanels() {
