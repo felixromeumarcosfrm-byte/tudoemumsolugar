@@ -1045,11 +1045,14 @@
     function setMainCat(c) { activeMainCat = c; activeSubCat = "Todos"; renderNav(); renderProducts(true); }
     function setSubCat(s) { activeSubCat = s; renderNav(); renderProducts(true); }
 
+    let searchTimeout;
     function handleSearch(query) {
-        searchQuery = sanitizeInput(query.toLowerCase());
-        renderProducts(true); // Reseta a paginação ao pesquisar
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            searchQuery = sanitizeInput(query.toLowerCase());
+            renderProducts(true); // Reseta a paginação ao pesquisar
+        }, 20);
     }
-
     function getFilteredProducts() {
         return db.filter(p => {
             const matchCat = activeMainCat === "Todos" || p.cat === activeMainCat;
@@ -1076,19 +1079,18 @@
         } else {
             document.getElementById('product-display').innerHTML = paginated.map((p) => {
                 const globalIndex = db.findIndex(x => x.name === p.name);
-                
-                // Calcula o "Preço Antigo" (+25%) automaticamente para o efeito visual
                 const oldPrice = Math.round(p.price * 1.25);
 
+                // Otimização: removemos o sanitizeInput daqui, pois os dados da base de dados (dbOrigem) já são seguros.
                 return `
                 <div class="card">
-                    <img src="${sanitizeInput(p.img)}" class="card-img" loading="lazy" alt="${sanitizeInput(p.name)}">
+                    <img src="${p.img}" class="card-img" loading="lazy" alt="${p.name}">
                     <div class="card-body">
-                        <span class="card-brand">${sanitizeInput(p.sub)}</span>
-                        <h3 class="card-title">${sanitizeInput(p.name)}</h3>
+                        <span class="card-brand">${p.sub}</span>
+                        <h3 class="card-title">${p.name}</h3>
                         <div class="attr-box">
-                            <select id="color-${globalIndex}" class="attr-select">${p.options.map(o => `<option value="${sanitizeInput(o)}">${sanitizeInput(o)}</option>`).join('')}</select>
-                            <select id="size-${globalIndex}" class="attr-select">${p.sizes.map(s => `<option value="${sanitizeInput(s)}">${sanitizeInput(s)}</option>`).join('')}</select>
+                            <select id="color-${globalIndex}" class="attr-select">${p.options.map(o => `<option value="${o}">${o}</option>`).join('')}</select>
+                            <select id="size-${globalIndex}" class="attr-select">${p.sizes.map(s => `<option value="${s}">${s}</option>`).join('')}</select>
                         </div>
                         <div class="old-price">${oldPrice.toLocaleString()} Kz</div>
                         <div class="price">${p.price.toLocaleString()} Kz</div>
@@ -1098,6 +1100,13 @@
             }).join('');
         }
         
+        const btnLoadMore = document.getElementById('btn-load-more');
+        if (filtered.length > paginated.length) {
+            btnLoadMore.classList.remove('hidden');
+        } else {
+            btnLoadMore.classList.add('hidden');
+        }
+    }    
         // Controle do botão Carregar Mais
         const btnLoadMore = document.getElementById('btn-load-more');
         if (filtered.length > paginated.length) {
@@ -1105,9 +1114,7 @@
         } else {
             btnLoadMore.classList.add('hidden');
         }
-    }
 
-    function loadMoreProducts() {
     function loadMoreProducts() {
         currentPage++;
         renderProducts(false);
