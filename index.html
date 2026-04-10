@@ -2,7 +2,7 @@
 <html lang="pt-AO" style="color-scheme: dark light;">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="seo-title">TUDO EM UM SÓ LUGAR | FRM BOUTIQUE</title>
     <meta id="seo-desc" name="description" content="Compre acessórios, cosméticos, eletrônicos e moda com entrega rápida em Angola. Tudo em um só lugar.">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -52,6 +52,17 @@
         .btn-load-more:hover { background: var(--accent); color: var(--primary); }
         .hidden { display: none !important; }
 
+        /* === CARROSSEL DE DESTAQUES INFINITO === */
+        .marquee-container { width: 100%; overflow: hidden; background: linear-gradient(to right, #050505, #1a1a1a, #050505); padding: 15px 0; border-bottom: 1px solid var(--border); display: flex; }
+        .marquee-track { display: flex; gap: 20px; width: max-content; animation: scroll 25s linear infinite; }
+        .marquee-track:hover { animation-play-state: paused; }
+        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .marquee-item { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        .marquee-item:hover { transform: scale(1.15); box-shadow: 0 0 20px var(--accent); }
+
+        /* === PREÇO PROMOCIONAL === */
+        .old-price { font-size: 0.9rem; color: #ff3b3b; text-decoration: line-through; margin-bottom: -5px; font-weight: 600; opacity: 0.8; }
+
         /* === EXTRAS E COMPONENTES === */
         .pay-card { background: #1a1a1a; border: 1px solid var(--border); padding: 15px 25px; border-radius: 12px; color: #fff; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px; flex: 1; min-width: 200px; text-align: center; }
         .review-card { background: #1a1a1a; border-left: 4px solid var(--accent); padding: 25px; border-radius: 12px; color: var(--text-dim); font-style: italic; display: flex; flex-direction: column; justify-content: space-between; }
@@ -95,10 +106,15 @@
 
     <!-- CABEÇALHO -->
     <div class="top-banner">Entregas rápidas nas 21 Províncias de Angola! 🇦🇴</div>
-    <header ondblclick="openAdmin()" title="Admin: Duplo Clique">
+    <header>
         <div class="logo">TUDO EM UM SÓ LUGAR</div>
         <p class="header-subtitle" id="user-greeting">Confiança, Segurança e Alcance Global</p>
     </header>
+
+    <!-- DESTAQUES RODANDO SEM PARAR -->
+    <div class="marquee-container" id="featured-carousel">
+        <div class="marquee-track" id="marquee-track"></div>
+    </div>
 
     <!-- BARRA DE PESQUISA INTELIGENTE -->
     <div class="search-container">
@@ -151,7 +167,7 @@
     <footer style="background: #0a0a0a; padding: 50px 20px; text-align: center; margin-top: 60px; border-top: 2px solid var(--accent);">
         <h2 style="color: var(--accent); margin-bottom: 15px; font-size: 2rem;">Call Center Fiável</h2>
         <a href="tel:+244941044772" style="display: inline-block; font-size: clamp(1.5rem, 4vw, 1.8rem); font-weight: 800; color: #fff; text-decoration: none; background: #1a1a1a; padding: 15px 30px; border-radius: 50px; border: 1px solid var(--accent); transition: 0.3s; margin-top: 10px;">📞 +244 941 044 772</a>
-        <p style="color: var(--text-dim); margin-top: 40px; font-size: 0.85rem;">&copy; 2026 TUDO EM UM SÓ LUGAR. Todos os direitos reservados. Site Seguro.</p>
+        <p style="color: var(--text-dim); margin-top: 40px; font-size: 0.85rem;">&copy; 2026 TUDO EM UM SÓ LUGAR. Todos os direitos reservados. Site Seguro. <span onclick="openAdmin()" style="cursor:pointer; font-size: 1.2rem; opacity: 0.5; margin-left: 10px;" title="Painel Restrito">🔒</span></p>
     </footer>
 
     <!-- ÍCONES FLUTUANTES -->
@@ -163,7 +179,7 @@
     <div id="cart-panel" class="panel">
         <h2 style="color: var(--accent); margin-bottom: 20px;">Seu Carrinho</h2>
         <div id="cart-items" style="max-height: 250px; overflow-y:auto; padding-right:10px;"></div>
-        <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border);">
+        <div id="checkout-form" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border);">
             <div style="display:flex; justify-content:space-between; font-size: 1.3rem; font-weight: 800; margin-bottom: 20px;">
                 <span>Total:</span> <span id="cart-total">0 Kz</span>
             </div>
@@ -181,7 +197,8 @@
                 <option value="Unitel Money">Unitel Money</option>
                 <option value="Pagamento na Entrega">Pagamento na Entrega</option>
             </select>
-            <button class="btn-buy" onclick="checkout()">FINALIZAR NO WHATSAPP</button>
+            <button class="btn-buy" onclick="checkout()" style="margin-bottom: 10px;">FINALIZAR NO WHATSAPP</button>
+            <button class="btn-buy" onclick="clearCart()" style="background: transparent; border: 1px solid #ff3b3b; color: #ff3b3b;">ESVAZIAR CARRINHO</button>
         </div>
     </div>
 
@@ -462,7 +479,7 @@
         { name: "T-shirt Sporting CP", price: 5000, cat: "Desporto", sub: "Liga NOS", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775595348/YDplbbC5b4cwCA9-small_rnjfmi.jpg", options:["Principal", "Alternativa", "Terceira"], sizes:["S", "M", "L", "XL"] },
 
         // MODA MASCULINA - FATOS CORPORATIVOS E SOCIAIS 
-        { name: "Fato Corporativo Azul Marinho", price: 85000, cat: "Moda Masculina", sub: "https://res.cloudinary.com/dwahqmril/image/upload/v1775786788/Fato_Corporativo_Azul_Marinho_mnzp7p.jpg", options:["Azul Marinho"], sizes:["46", "48", "50", "52", "54"] },
+        { name: "Fato Corporativo Azul Marinho", price: 85000, cat: "Moda Masculina", sub: "Fatos Corporativos", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775786788/Fato_Corporativo_Azul_Marinho_mnzp7p.jpg", options:["Azul Marinho"], sizes:["46", "48", "50", "52", "54"] },
         { name: "Fato Corporativo Preto Luxo", price: 95000, cat: "Moda Masculina", sub: "Fatos Corporativos", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775786794/Fato_Corporativo_Preto_Luxo_lalywd.jpg", options:["Preto"], sizes:["46", "48", "50", "52", "54"] },
         { name: "Fato Corporativo Cinza", price: 80000, cat: "Moda Masculina", sub: "Fatos Corporativos", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775786794/Fato_Corporativo_Cinza_h4h5yx.jpg", options:["Cinza Claro", "Cinza Escuro"], sizes:["46", "48", "50", "52", "54"] },
         { name: "Fato Social Chumbo", price: 85000, cat: "Moda Masculina", sub: "Fatos Corporativos", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775786806/Fato_Social_Chumbo_we0emq.jpg", options:["Chumbo"], sizes:["46", "48", "50", "52", "54"] },
@@ -519,7 +536,7 @@
         { name: "T-shirt Oversized Streetwear", price: 18500, cat: "Moda Masculina", sub: "T-Shirts", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775786839/T-shirt_Oversized_Streetwear_tz3zrk.jpg", options:["Preto", "Bege"], sizes:["M", "L", "XL"] },
         { name: "Polo Lacoste Original", price: 45000, cat: "Moda Masculina", sub: "T-Shirts", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775786818/Polo_Lacoste_Original_ud7ul2.jpg", options:["Branco", "Verde", "Preto"], sizes:["S", "M", "L", "XL"] },
         { name: "Polo Ralph Lauren", price: 48000, cat: "Moda Masculina", sub: "T-Shirts", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775786818/Polo_Ralph_Lauren_doopit.jpg", options:["Azul Marinho", "Branco"], sizes:["S", "M", "L", "XL"] },
-        { name: "T-shirt Tommy Hilfiger", price: 32000, cat: "Moda Masculina", sub: "T-Shirts", img: "hhttps://res.cloudinary.com/dwahqmril/image/upload/v1775786840/T-shirt_Tommy_Hilfiger_swd1fl.jpg", options:["Branco", "Azul", "Vermelho"], sizes:["S", "M", "L", "XL"] },
+        { name: "T-shirt Tommy Hilfiger", price: 32000, cat: "Moda Masculina", sub: "T-Shirts", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775786840/T-shirt_Tommy_Hilfiger_swd1fl.jpg", options:["Branco", "Azul", "Vermelho"], sizes:["S", "M", "L", "XL"] },
         { name: "T-shirt Hugo Boss", price: 38000, cat: "Moda Masculina", sub: "T-Shirts", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775786839/T-shirt_Hugo_Boss_qxyssk.jpg", options:["Preto", "Branco"], sizes:["S", "M", "L", "XL"] },
         { name: "T-shirt Calvin Klein", price: 28000, cat: "Moda Masculina", sub: "T-Shirts", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775786838/T-shirt_Calvin_Klein_x9sii1.jpg", options:["Preto", "Branco", "Cinza"], sizes:["S", "M", "L", "XL"] },
         { name: "T-shirt Armani Exchange", price: 42000, cat: "Moda Masculina", sub: "T-Shirts", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775786832/T-shirt_Armani_Exchange_n5x1bv.jpg", options:["Preto", "Azul Escuro"], sizes:["S", "M", "L", "XL"] },
@@ -762,7 +779,7 @@
         { name: "Jogo de Xícaras Café c/ Pires (6 Un)", price: 12000, cat: "Casa e Diversos", sub: "Cozinha", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775834947/Jogo_de_X%C3%ADcaras_Caf%C3%A9_c_Pires_6_Un_tvrz5x.jpg", options:["Branco"], sizes:["80ml"] },
         { name: "Pratos Quadrados Pretos Elegantes (6 Un)", price: 28000, cat: "Casa e Diversos", sub: "Cozinha", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775834947/Pratos_Quadrados_Pretos_Elegantes_6_Un_ejoxml.jpg", options:["Preto Fosco"], sizes:["Raso"] },
 
-        { name: "Bacia de Plástico Grande", price: 8000, cat: "Casa e Diversos", sub: "Plásticos", img: "hhttps://res.cloudinary.com/dwahqmril/image/upload/v1775834946/Bacia_de_Pl%C3%A1stico_Grande_lzw6v0.jpg", options:["Azul", "Vermelho"], sizes:["50L"] },
+        { name: "Bacia de Plástico Grande", price: 8000, cat: "Casa e Diversos", sub: "Plásticos", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775834946/Bacia_de_Pl%C3%A1stico_Grande_lzw6v0.jpg", options:["Azul", "Vermelho"], sizes:["50L"] },
         { name: "Balde com Alça de Ferro", price: 4500, cat: "Casa e Diversos", sub: "Plásticos", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775834946/Balde_com_Al%C3%A7a_de_Ferro_qtdhnw.jpg", options:["Sortidas"], sizes:["15L"] },
         { name: "Caixa Organizadora com Tampa", price: 12000, cat: "Casa e Diversos", sub: "Plásticos", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775834946/Caixa_Organizadora_com_Tampa_ax6hlw.jpg", options:["Transparente"], sizes:["60L"] },
         { name: "Conjunto de Tupperware (10 Pçs)", price: 15000, cat: "Casa e Diversos", sub: "Plásticos", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775834946/Conjunto_de_Tupperware_10_P%C3%A7s_thqila.jpg", options:["Coloridas"], sizes:["Kit"] },
@@ -799,7 +816,7 @@
         { name: "Chinela Reebok Classic Slide", price: 24000, cat: "Diversos", sub: "Chinelas Desportivas", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775834926/Chinela_Reebok_Classic_Slide_jkw4je.jpg", options:["Azul Marinho"], sizes:["39", "40", "41", "42", "43"] },
         { name: "Chinela Oakley Operative Dedo", price: 42000, cat: "Diversos", sub: "Chinelas Desportivas", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775834926/Chinela_Oakley_Operative_Dedo_kjmdx8.jpg", options:["Preto", "Oliva"], sizes:["39", "40", "41", "42", "43"] },
 
-        { name: "Havaianas Top Tradicional", price: 8500, cat: "Diversos", sub: "Havaianas", img: "hhttps://res.cloudinary.com/dwahqmril/image/upload/v1775834926/Havaianas_Top_Tradicional_cswsqs.jpg", options:["Preto", "Azul", "Branco"], sizes:["35/36", "37/38", "39/40", "41/42", "43/44"] },
+        { name: "Havaianas Top Tradicional", price: 8500, cat: "Diversos", sub: "Havaianas", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775834926/Havaianas_Top_Tradicional_cswsqs.jpg", options:["Preto", "Azul", "Branco"], sizes:["35/36", "37/38", "39/40", "41/42", "43/44"] },
         { name: "Havaianas Brasil Logo", price: 12000, cat: "Diversos", sub: "Havaianas", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775834925/Havaianas_Brasil_Logo_xeb5ep.jpg", options:["Verde Bandeira", "Preto", "Amarelo"], sizes:["35/36", "37/38", "39/40", "41/42", "43/44"] },
         { name: "Havaianas Slim Feminina", price: 9500, cat: "Diversos", sub: "Havaianas", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775834925/Havaianas_Slim_Feminina_zdn1ij.jpg", options:["Rosa", "Preto", "Dourado"], sizes:["35/36", "37/38", "39/40"] },
         { name: "Havaianas Surf Masculina Estampada", price: 14000, cat: "Diversos", sub: "Havaianas", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775834925/Havaianas_Slim_Feminina_zdn1ij.jpg", options:["Azul Oceano"], sizes:["39/40", "41/42", "43/44"] },
@@ -835,12 +852,29 @@
         { name: "Capa Brilhante Glitter Feminina", price: 12000, cat: "Acessórios", sub: "Capas de Telefone", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775834922/Capa_Brilhante_Glitter_Feminina_jgbpvd.jpg", options:["Prata", "Rosa", "Dourado"], sizes:["Todos os Modelos"] },
         { name: "Capa 360 Graus Magnética Vidro Duplo", price: 25000, cat: "Acessórios", sub: "Capas de Telefone", img: "https://res.cloudinary.com/dwahqmril/image/upload/v1775834922/Capa_360_Graus_Magn%C3%A9tica_Vidro_Duplo_pvafk4.jpg", options:["Preto", "Prata"], sizes:["Todos os Modelos"] },
     ];
-
-    /* ==============================================================
-       3. VARIÁVEIS DE ESTADO E SISTEMAS (Pesquisa e Paginação)
+/* ==============================================================
+       3. VARIÁVEIS DE ESTADO E SISTEMAS (Novos e Melhorados)
        ============================================================== */
-    let db = JSON.parse(localStorage.getItem('frm_master_db_explicit')) || dbOrigem;
-    let reviewsDB = JSON.parse(localStorage.getItem('frm_reviews')) || [];
+    // Sistema de Versão: Mude o "v2" para "v3" no futuro se adicionar novos produtos ao código
+    const DB_VERSION = 'frm_master_db_v2'; 
+    const REVIEWS_VERSION = 'frm_reviews_v2';
+
+    // 10 Avaliações Fictícias (Faltavam no site)
+    const defaultReviews = [
+        { text: "Entrega super rápida aqui no Lubango! O iPhone chegou impecável.", author: "João Mateus", prov: "Huíla", mun: "Lubango" },
+        { text: "Comprei um fato corporativo, o tecido é de altíssima qualidade. Recomendo.", author: "Ana Costa", prov: "Luanda", mun: "Talatona" },
+        { text: "Atendimento top via WhatsApp. O Perfume Dior Sauvage é original mesmo.", author: "Carlos Silva", prov: "Benguela", mun: "Lobito" },
+        { text: "Amei os vestidos de gala. Muito bem embalados e cheirosos.", author: "Maria Domingos", prov: "Cuanza Sul", mun: "Sumbe" },
+        { text: "Os lençóis de 600 fios são maravilhosos. Comprarei novamente com certeza.", author: "Teresa Lemos", prov: "Huambo", mun: "Huambo" },
+        { text: "Chuteiras Nike originais, perfeitas para o fim de semana. Grande loja!", author: "Paulo Fernando", prov: "Luanda", mun: "Viana" },
+        { text: "Site muito rápido e fácil de usar. Os preços estão justos.", author: "Miguel António", prov: "Malanje", mun: "Malanje" },
+        { text: "Excelente iniciativa. Encomendei para a minha mãe no Uíge e chegou a tempo.", author: "Sónia Marques", prov: "Uíge", mun: "Uíge" },
+        { text: "Comprei o PS5 e chegou sem arranhões. Equipa muito confiável.", author: "Rui Pedro", prov: "Zaire", mun: "Soyo" },
+        { text: "Tudo em um só lugar mesmo! Os produtos de beleza são fantásticos e a entrega não falha.", author: "Isabel Mendes", prov: "Cabinda", mun: "Cabinda" }
+    ];
+
+    let db = JSON.parse(localStorage.getItem(DB_VERSION)) || dbOrigem;
+    let reviewsDB = JSON.parse(localStorage.getItem(REVIEWS_VERSION)) || defaultReviews;
 
     let cart = [];
     let activeMainCat = "Todos";
@@ -849,13 +883,9 @@
     let currentUser = null;
     let purchaseHistory = [];
 
-    // Sistema de Paginação Real
+    // Paginação Real
     let currentPage = 1;
-    const itemsPerPage = 12; // Mostra 12 de cada vez para economizar dados no Mobile
-
-    /* ==============================================================
-       FUNÇÕES FALTANTES (CORREÇÃO DOS ERROS)
-       ============================================================== */
+    const itemsPerPage = 20;
        
     // 1. Preenche a lista de províncias ao carregar a página
     function populateProvinces() {
@@ -915,14 +945,29 @@
         document.getElementById('rev-name').value = sanitizeInput(currentUser.name);
     }
 
+    // Função para renderizar os destaques rodando no topo
+    function renderCarousel() {
+        const track = document.getElementById('marquee-track');
+        // Pega 15 produtos aleatórios da base de dados
+        const shuffled = [...db].sort(() => 0.5 - Math.random());
+        const featured = shuffled.slice(0, 15);
+        
+        let html = '';
+        featured.forEach(p => {
+            html += `<img src="${sanitizeInput(p.img)}" class="marquee-item" title="${sanitizeInput(p.name)}" onclick="document.getElementById('search-bar').value='${sanitizeInput(p.name)}'; handleSearch('${sanitizeInput(p.name)}'); window.scrollTo(0, 400);">`;
+        });
+        
+        track.innerHTML = html + html;
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
         populateProvinces();
         checkAuth();
+        renderCarousel(); // Inicia as bolinhas rodando
         renderNav();
-        renderProducts(true); // reset page
+        renderProducts(true); 
         renderReviews();
     });
-
     /* ==============================================================
        4. SISTEMA DE AUTENTICAÇÃO E HISTÓRICO
        ============================================================== */
@@ -1031,6 +1076,10 @@
         } else {
             document.getElementById('product-display').innerHTML = paginated.map((p) => {
                 const globalIndex = db.findIndex(x => x.name === p.name);
+                
+                // Calcula o "Preço Antigo" (+25%) automaticamente para o efeito visual
+                const oldPrice = Math.round(p.price * 1.25);
+
                 return `
                 <div class="card">
                     <img src="${sanitizeInput(p.img)}" class="card-img" loading="lazy" alt="${sanitizeInput(p.name)}">
@@ -1041,6 +1090,7 @@
                             <select id="color-${globalIndex}" class="attr-select">${p.options.map(o => `<option value="${sanitizeInput(o)}">${sanitizeInput(o)}</option>`).join('')}</select>
                             <select id="size-${globalIndex}" class="attr-select">${p.sizes.map(s => `<option value="${sanitizeInput(s)}">${sanitizeInput(s)}</option>`).join('')}</select>
                         </div>
+                        <div class="old-price">${oldPrice.toLocaleString()} Kz</div>
                         <div class="price">${p.price.toLocaleString()} Kz</div>
                         <button class="btn-buy" onclick="addToCart(${globalIndex})">ADICIONAR</button>
                     </div>
@@ -1058,50 +1108,100 @@
     }
 
     function loadMoreProducts() {
+    function loadMoreProducts() {
         currentPage++;
         renderProducts(false);
     }
-
-    /* ==============================================================
-       6. CARRINHO DE COMPRAS E WHATSAPP
+/* ==============================================================
+       6. CARRINHO DE COMPRAS E WHATSAPP (AGRUPAMENTO AUTOMÁTICO)
        ============================================================== */
+    function updateCartBadge() {
+        // Calcula o total de ITENS (considerando as quantidades)
+        const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+        document.getElementById('cart-badge').innerText = totalItems;
+    }
+
     function addToCart(globalIndex) {
         const product = db[globalIndex];
-        const cid = Date.now() + Math.random(); 
         const selectedColor = sanitizeInput(document.getElementById(`color-${globalIndex}`).value);
         const selectedSize = sanitizeInput(document.getElementById(`size-${globalIndex}`).value);
         
-        cart.push({ ...product, cid, selectedColor, selectedSize });
-        document.getElementById('cart-badge').innerText = cart.length;
-        alert(`✅ ${product.name} adicionado ao carrinho com rapidez!`);
+        // Verifica se o produto com a MESMA COR e MESMO TAMANHO já está no carrinho
+        const existingItem = cart.find(item => item.name === product.name && item.selectedColor === selectedColor && item.selectedSize === selectedSize);
+
+        if(existingItem) {
+            existingItem.qty += 1; // Se existir, apenas aumenta a quantidade
+        } else {
+            const cid = Date.now() + Math.random(); 
+            cart.push({ ...product, cid, selectedColor, selectedSize, qty: 1 }); // Cria novo item
+        }
+        
+        updateCartBadge();
+        alert(`✅ ${product.name} adicionado ao carrinho!`);
+    }
+
+    function changeQty(cid, amount) {
+        const item = cart.find(i => i.cid === cid);
+        if(!item) return;
+        
+        item.qty += amount;
+        if(item.qty <= 0) {
+            removeCartItem(cid); // Remove se a quantidade chegar a zero
+        } else {
+            updateCartBadge();
+            openCart();
+        }
     }
 
     function removeCartItem(cid) {
         cart = cart.filter(item => item.cid !== cid);
-        document.getElementById('cart-badge').innerText = cart.length;
+        updateCartBadge();
         openCart(); 
+    }
+
+    function clearCart() {
+        if(confirm("Tem certeza que deseja esvaziar o carrinho?")) {
+            cart = [];
+            updateCartBadge();
+            openCart();
+        }
     }
 
     function openCart() {
         document.getElementById('overlay').style.display = 'block';
         document.getElementById('cart-panel').style.display = 'block';
         
+        const checkoutForm = document.getElementById('checkout-form');
+        
+        if (cart.length === 0) {
+            document.getElementById('cart-items').innerHTML = "<p style='color:var(--text-dim); text-align:center;'>O seu carrinho está vazio.</p>";
+            document.getElementById('cart-total').innerText = "0 Kz";
+            if(checkoutForm) checkoutForm.style.display = 'none';
+            return;
+        }
+
+        if(checkoutForm) checkoutForm.style.display = 'block';
+
         document.getElementById('cart-items').innerHTML = cart.map((item) => `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; font-size:0.8rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; font-size:0.85rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
                 <div style="flex:1;">
                     <div style="font-weight:bold; color:#fff;">${sanitizeInput(item.name)}</div>
                     <div style="color:var(--accent);">${sanitizeInput(item.selectedColor)} - ${sanitizeInput(item.selectedSize)}</div>
-                    <div>${item.price.toLocaleString()} Kz</div>
+                    <div>${item.price.toLocaleString()} Kz (Cada)</div>
                 </div>
-                <button class="remove-btn" onclick="removeCartItem(${item.cid})">X Remover</button>
+                <div style="display:flex; align-items:center; gap: 10px;">
+                    <button onclick="changeQty(${item.cid}, -1)" style="background:#333; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">-</button>
+                    <span style="color:white; font-weight:bold;">${item.qty}</span>
+                    <button onclick="changeQty(${item.cid}, 1)" style="background:#333; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">+</button>
+                </div>
             </div>
         `).join('');
         
-        document.getElementById('cart-total').innerText = cart.reduce((sum, item) => sum + item.price, 0).toLocaleString() + " Kz";
+        const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+        document.getElementById('cart-total').innerText = total.toLocaleString() + " Kz";
     }
 
-       function checkout() {
-        // Pegamos os valores PUROS (sem sanitizeInput) para enviar corretamente ao WhatsApp
+    function checkout() {
         const name = document.getElementById('cust-name').value.trim();
         const prov = document.getElementById('cust-province').value;
         const mun = document.getElementById('cust-municipality').value;
@@ -1111,7 +1211,6 @@
             return alert("Preencha Província, Município, Pagamento e certifique-se de que tem itens no carrinho.");
         }
         
-        // Construção da mensagem pura usando \n para quebra de linha
         let msgPlana = `*NOVA COMPRA - TUDO EM UM SÓ LUGAR*\n\n`;
         msgPlana += `*Cliente:* ${name}\n`;
         msgPlana += `*Província:* ${prov}\n`;
@@ -1119,27 +1218,26 @@
         msgPlana += `*Itens:*\n`;
         
         cart.forEach(i => {
-            // Desfazemos a sanitização temporária apenas para a fatura no WhatsApp
             const rawName = i.name.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
             const rawColor = i.selectedColor.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
             const rawSize = i.selectedSize.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
             
-            msgPlana += `- ${rawName} [${rawColor}/${rawSize}] - ${i.price} Kz\n`;
+            // Agora envia com a Quantidade (ex: 2x iPhone 13)
+            msgPlana += `- ${i.qty}x ${rawName} [${rawColor}/${rawSize}] - ${(i.price * i.qty).toLocaleString()} Kz\n`;
         });
         
-        const totalOrder = cart.reduce((s, i) => s + i.price, 0);
+        const totalOrder = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
         msgPlana += `\n*TOTAL:* ${totalOrder.toLocaleString()} Kz\n*Método:* ${pay}`;
 
-        // Salvar no histórico (aqui usamos os sanitizados que já estão no carrinho)
         if(currentUser) {
             purchaseHistory.push({ date: new Date().toLocaleString(), total: totalOrder, items: [...cart] });
             localStorage.setItem('frm_history_' + currentUser.name, JSON.stringify(purchaseHistory));
         }
 
-        // O encodeURIComponent garante que emojis, espaços e quebras de linha funcionem no link wa.me
         window.open(`https://wa.me/244941044772?text=${encodeURIComponent(msgPlana)}`, '_blank');
-        cart = [];
-        document.getElementById('cart-badge').innerText = 0;
+        
+        cart = []; // Esvazia o carrinho após finalizar
+        updateCartBadge();
         closePanels();
     }
 
@@ -1162,7 +1260,7 @@
         const safeText = sanitizeInput(rawText);
 
         reviewsDB.push({ text: safeText, author: safeName, prov: safeProv, mun: safeMun });
-        localStorage.setItem('frm_reviews', JSON.stringify(reviewsDB));
+        localStorage.setItem(REVIEWS_VERSION, JSON.stringify(reviewsDB));
         
         // 2. Envia para o E-mail de forma 100% segura sem quebrar o link
         const emailBody = `Cliente: ${rawName}\nProvíncia: ${rawProv} / Município: ${rawMun}\n\nMensagem:\n${rawText}`;
@@ -1215,7 +1313,8 @@
             sizes: cSizes.split(',').map(x => x.trim())
         });
         
-        localStorage.setItem('frm_master_db_explicit', JSON.stringify(db));
+        // CORRIGIDO: Salva na DB correta
+        localStorage.setItem(DB_VERSION, JSON.stringify(db));
         alert("Produto adicionado ao sistema com sucesso!");
         
         // Limpa campos admin
@@ -1224,6 +1323,7 @@
         
         renderNav();
         renderProducts(true);
+        renderCarousel(); // Atualiza o carrossel
         closePanels();
     }
 
@@ -1233,24 +1333,23 @@
 
         if(!exactName || !newImg) return alert("Preencha o nome exato e o novo link da imagem!");
 
-        // Procura o produto (ignorando maiúsculas e minúsculas)
         const productIndex = db.findIndex(p => p.name.toLowerCase() === exactName.toLowerCase());
 
         if(productIndex === -1) {
             return alert("Produto não encontrado! Verifique se digitou o nome corretamente.");
         }
 
-        // Atualiza a imagem e salva
         db[productIndex].img = newImg;
-        localStorage.setItem('frm_master_db_explicit', JSON.stringify(db));
+        // CORRIGIDO: Salva na DB correta
+        localStorage.setItem(DB_VERSION, JSON.stringify(db));
         
         alert(`A imagem de "${db[productIndex].name}" foi atualizada com sucesso!`);
         
-        // Limpa os campos
         document.getElementById('adm-edit-name').value = '';
         document.getElementById('adm-edit-img').value = '';
         
-        renderProducts(false); // Atualiza a tela sem voltar para a página 1
+        renderProducts(false); 
+        renderCarousel(); // Atualiza o carrossel
     }
 
     function closePanels() {
